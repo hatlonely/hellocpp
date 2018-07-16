@@ -19,19 +19,21 @@ struct nohashint {
     }
 };
 
-const int N = 3000000;
+const int N = 300000;
 int i;
 
-#define MapFind()                 \
-    decltype(m)::iterator it;     \
-    for (int i = 0; i < N; i++) { \
-        m[i] = i;                 \
-    }                             \
-    int t1 = nowUs();             \
-    for (int i = 0; i < N; i++) { \
-        it = m.find(i);           \
-    }                             \
-    int t2 = nowUs();             \
+#define MapFind()                     \
+    decltype(m)::iterator it;         \
+    for (int i = 0; i < N; i++) {     \
+        m[i] = i;                     \
+    }                                 \
+    int t1 = nowUs();                 \
+    for (int l = 0; l < 100; l++) {   \
+        for (int i = 0; i < N; i++) { \
+            it = m.find(i);           \
+        }                             \
+    }                                 \
+    int t2 = nowUs();                 \
     i = it->second;  // prevent -O2
 
 #define MapFindSparseHash() \
