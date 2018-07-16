@@ -2,6 +2,7 @@
 #include <boost/unordered/unordered_map.hpp>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <sparsehash/dense_hash_map>
 #include <unordered_map>
 
@@ -36,6 +37,15 @@ const int N = 10000000;
               << key                                               \
               << " => " << t2 - t1 << std::endl;
 
+#define BenchmarkMap(namespace, class, process)          \
+    void benchmark_##namespace##_##class() {             \
+        {                                                \
+            namespace ::class<int, int> m;               \
+            process();                                   \
+            Elapse(#namespace "::" #class "<int, int>"); \
+        }                                                \
+    }
+
 #define BenchmarkUnorderedMap(namespace, class, process)            \
     void benchmark_##namespace##_##class() {                        \
         {                                                           \
@@ -55,11 +65,13 @@ const int N = 10000000;
         }                                                           \
     }
 
+BenchmarkMap(std, map, MapFind);
 BenchmarkUnorderedMap(std, unordered_map, MapFind);
 BenchmarkUnorderedMap(boost, unordered_map, MapFind);
 BenchmarkUnorderedMap(google, dense_hash_map, MapFindSparseHash);
 
 int main(int argc, char *argv[]) {
+    benchmark_std_map();
     benchmark_std_unordered_map();
     benchmark_boost_unordered_map();
     benchmark_google_dense_hash_map();
