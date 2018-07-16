@@ -132,6 +132,16 @@ ExternalProject_Add(
 )
 add_dependencies(third tessil_hopscotch_map)
 
+ExternalProject_Add(
+    tessil_robin_map
+    URL https://github.com/Tessil/robin-map/archive/v0.3.0.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/robin_map
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include && cp -r ${HELLO_CPP_SOURCE_DIR}/third/robin_map/src/tessil_robin_map/tsl ${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include
+)
+add_dependencies(third tessil_robin_map)
+
 # ExternalProject_Add(
 #     facebook_folly
 #     GIT_REPOSITORY https://github.com/facebook/folly.git
@@ -157,6 +167,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include"
 )
 
 link_directories(
@@ -170,6 +181,7 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/lib"
 )
 
 aux_source_directory(src/unordered_map unordered_map_source)
