@@ -105,6 +105,22 @@ ExternalProject_Add(
 )
 add_dependencies(third sparsehash_sparsehash)
 
+ExternalProject_Add(
+    google_double_conversion
+    URL https://github.com/google/double-conversion/archive/v3.0.0.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/double_conversion
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build
+)
+add_dependencies(third google_double_conversion)
+
+# ExternalProject_Add(
+#     facebook_folly
+#     GIT_REPOSITORY https://github.com/facebook/folly.git
+#     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/folly
+#     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/folly/build
+# )
+# add_dependencies(third facebook_folly)
+
 set(CMAKE_CXX_FLAGS "-std=c++11 -g")
 set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -O2 -g")
 
@@ -132,6 +148,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/jsoncpp/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/include"
 )
 
 link_directories(
@@ -142,6 +159,7 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/jsoncpp/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib"
 )
 
 aux_source_directory(src/unordered_map unordered_map_source)
