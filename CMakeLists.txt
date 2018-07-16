@@ -113,6 +113,16 @@ ExternalProject_Add(
 )
 add_dependencies(third google_double_conversion)
 
+ExternalProject_Add(
+    google_gperftools
+    URL https://github.com/gperftools/gperftools/archive/gperftools-2.7.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/gperftools
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND sh autogen.sh && ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/gperftools/build && make -j8
+)
+add_dependencies(third google_gperftools)
+
 # ExternalProject_Add(
 #     facebook_folly
 #     GIT_REPOSITORY https://github.com/facebook/folly.git
@@ -121,8 +131,8 @@ add_dependencies(third google_double_conversion)
 # )
 # add_dependencies(third facebook_folly)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -g")
-set(CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -O2 -g")
+set(CMAKE_CXX_FLAGS "-w -g -std=c++11")
+set(CMAKE_CXX_FLAGS_RELEASE "-w -g -O2 -std=c++11")
 
 # generate proto struct
 # add_custom_command(
@@ -149,6 +159,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/jsoncpp/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/include"
 )
 
 link_directories(
@@ -160,6 +171,7 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/jsoncpp/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/lib"
 )
 
 aux_source_directory(src/unordered_map unordered_map_source)
@@ -168,6 +180,19 @@ add_executable(test_unordered_map ${unordered_map_source})
 add_dependencies(test_unordered_map third)
 target_link_libraries(
     test_unordered_map
+    profiler
+)
+
+add_custom_command(
+    OUTPUT ${HELLO_CPP_BINARY_DIR}/test_unordered_map.svg
+    DEPENDS test_unordered_map
+    COMMAND CPUPROFILE=test_unordered_map.pprof ./test_unordered_map && ${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/bin/pprof --svg test_unordered_map test_unordered_map.pprof > test_unordered_map.svg
+    WORKING_DIRECTORY ${HELLO_CPP_BINARY_DIR}
+)
+
+add_custom_target(
+    svg
+    DEPENDS ${HELLO_CPP_BINARY_DIR}/test_unordered_map.svg
 )
 
 enable_testing()
