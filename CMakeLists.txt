@@ -58,17 +58,17 @@ ExternalProject_Add(
 )
 add_dependencies(third vipshop_hiredis_vip)
 
-ExternalProject_Add(
-    aerospike_aerospike_client_c
-    GIT_REPOSITORY https://github.com/aerospike/aerospike-client-c.git
-    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c
-    BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND make
-    INSTALL_COMMAND ls target | xargs -I {} cp -r target/{}/ ${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c/build
-    COMMAND rm -rf ${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c/build/lib/libaerospike.dylib
-)
-add_dependencies(third aerospike_aerospike_client_c)
+# ExternalProject_Add(
+#     aerospike_aerospike_client_c
+#     GIT_REPOSITORY https://github.com/aerospike/aerospike-client-c.git
+#     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c
+#     BUILD_IN_SOURCE true
+#     CONFIGURE_COMMAND ""
+#     BUILD_COMMAND make
+#     INSTALL_COMMAND ls target | xargs -I {} cp -r target/{}/ ${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c/build
+#     COMMAND rm -rf ${HELLO_CPP_SOURCE_DIR}/third/aerospike-client-c/build/lib/libaerospike.dylib
+# )
+# add_dependencies(third aerospike_aerospike_client_c)
 
 # ExternalProject_Add(
 #     nlohmann_json
