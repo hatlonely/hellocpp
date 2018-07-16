@@ -123,6 +123,15 @@ ExternalProject_Add(
 )
 add_dependencies(third google_gperftools)
 
+ExternalProject_Add(
+    tessil_hopscotch_map
+    URL https://github.com/Tessil/hopscotch-map/archive/v2.0.0.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build
+    INSTALL_COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/ && cp -r ${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/src/tessil_hopscotch_map/include ${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/
+)
+add_dependencies(third tessil_hopscotch_map)
+
 # ExternalProject_Add(
 #     facebook_folly
 #     GIT_REPOSITORY https://github.com/facebook/folly.git
@@ -133,19 +142,6 @@ add_dependencies(third google_gperftools)
 
 set(CMAKE_CXX_FLAGS "-w -g -std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "-w -g -O2 -std=c++11")
-
-# generate proto struct
-# add_custom_command(
-#     OUTPUT ${HELLO_CPP_SOURCE_DIR}/proto/dmpval_pb_message.pb.cc ${HELLO_CPP_SOURCE_DIR}/proto/dmpval_pb_message.pb.h
-#     DEPENDS ${HELLO_CPP_SOURCE_DIR}/proto/dmpval_pb_message.proto
-#     COMMAND ${HELLO_CPP_SOURCE_DIR}/third/protobuf/build/bin/protoc -I. --cpp_out=. dmpval_pb_message.proto
-#     WORKING_DIRECTORY ${HELLO_CPP_SOURCE_DIR}/proto
-# )
-# add_custom_target(
-#     pbout
-#     DEPENDS ${HELLO_CPP_SOURCE_DIR}/proto/dmpval_pb_message.pb.cc
-# )
-# add_dependencies(pbout third)
 
 include_directories(
     "${HELLO_CPP_SOURCE_DIR}/include"
@@ -160,6 +156,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/include"
 )
 
 link_directories(
@@ -172,6 +169,7 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/lib"
 )
 
 aux_source_directory(src/unordered_map unordered_map_source)

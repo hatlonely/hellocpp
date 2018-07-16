@@ -5,6 +5,7 @@
 #include <map>
 #include <sparsehash/dense_hash_map>
 #include <unordered_map>
+#include <tsl/hopscotch_map.h>
 
 int nowUs() {
     timeval now = {0, 0};
@@ -77,10 +78,12 @@ BenchmarkMap(std, map, MapFind);
 BenchmarkUnorderedMap(std, unordered_map, MapFind);
 BenchmarkUnorderedMap(boost, unordered_map, MapFind);
 BenchmarkUnorderedMap(google, dense_hash_map, MapFindSparseHash);
+BenchmarkUnorderedMap(tsl, hopscotch_map, MapFind);
 
 int main(int argc, char *argv[]) {
     benchmark_std_map();
     benchmark_std_unordered_map();
     benchmark_boost_unordered_map();
     benchmark_google_dense_hash_map();
+    benchmark_tsl_hopscotch_map();
 }
