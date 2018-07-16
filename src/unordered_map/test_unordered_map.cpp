@@ -19,7 +19,7 @@ struct nohashint {
     }
 };
 
-const int N = 10000000;
+const int N = 30000000;
 
 #define MapFind()                 \
     int t1 = nowUs();             \
