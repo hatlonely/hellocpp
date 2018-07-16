@@ -1,12 +1,12 @@
 #include <sys/time.h>
+#include <tsl/hopscotch_map.h>
+#include <tsl/robin_map.h>
 #include <boost/unordered/unordered_map.hpp>
 #include <iomanip>
 #include <iostream>
 #include <map>
 #include <sparsehash/dense_hash_map>
 #include <unordered_map>
-#include <tsl/hopscotch_map.h>
-#include <tsl/robin_map.h>
 
 int nowUs() {
     timeval now = {0, 0};
@@ -21,7 +21,7 @@ struct nohashint {
     }
 };
 
-const int N = 300000;
+const int N = 3000000;
 int i;
 
 #define MapFind()                     \
