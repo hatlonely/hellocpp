@@ -142,7 +142,6 @@ ExternalProject_Add(
 )
 add_dependencies(third tessil_robin_map)
 
-
 ExternalProject_Add(
     libevent
     URL https://github.com/libevent/libevent/archive/release-2.1.7-rc.zip
@@ -160,10 +159,10 @@ ExternalProject_Add(
     URL https://github.com/apache/thrift/archive/0.9.2.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_2
     BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND sh bootstrap.sh && ./configure
-        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift/build
+    CONFIGURE_COMMAND sh bootstrap.sh &&
+        ./configure
+        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_2/build
         --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
-        --with-openssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
         --with-libevent=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
         --with-qt4=no
         --with-qt5=no
@@ -186,16 +185,25 @@ ExternalProject_Add(
         --with-dotnetcore=no
         --with-d=no
         --disable-shared
+        --disable-tests
+        --disable-tutorial
+    BUILD_COMMAND
+        export CPLUS_INCLUDE_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include &&
+        export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib &&
+        make
 )
+add_dependencies(apache_thrift_0_9_2 openssl_openssl)
+add_dependencies(apache_thrift_0_9_2 boostorg_boost)
+add_dependencies(apache_thrift_0_9_2 libevent)
 add_dependencies(third apache_thrift_0_9_2)
 
 ExternalProject_Add(
-    apache_thrift
+    apache_thrift_0_11_0
     URL https://github.com/apache/thrift/archive/0.11.0.zip
-    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0
     BUILD_IN_SOURCE true
     CONFIGURE_COMMAND sh bootstrap.sh && ./configure
-        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift/build
+        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0/build
         --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
         --with-openssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
         --with-libevent=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
@@ -221,10 +229,10 @@ ExternalProject_Add(
         --with-d=no
         --disable-shared
 )
-add_dependencies(apache_thrift openssl_openssl)
-add_dependencies(apache_thrift boostorg_boost)
-add_dependencies(apache_thrift libevent)
-add_dependencies(third apache_thrift)
+add_dependencies(apache_thrift_0_11_0 openssl_openssl)
+add_dependencies(apache_thrift_0_11_0 boostorg_boost)
+add_dependencies(apache_thrift_0_11_0 libevent)
+add_dependencies(third apache_thrift_0_11_0)
 
 # ExternalProject_Add(
 #     facebook_folly
@@ -278,6 +286,23 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/lib"
 )
 
+# api
+add_custom_command(
+    OUTPUT ${HELLO_CPP_SOURCE_DIR}/api/echo/gen-cpp
+    DEPENDS ${HELLO_CPP_SOURCE_DIR}/api/echo/echo.thrift
+    COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0
+    COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_9_2
+    COMMAND ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0/build/bin/thrift -r --gen cpp -o ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0 ${HELLO_CPP_SOURCE_DIR}/api/echo/echo.thrift
+    COMMAND ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_2/build/bin/thrift -r --gen cpp -o ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_9_2 ${HELLO_CPP_SOURCE_DIR}/api/echo/echo.thrift
+    WORKING_DIRECTORY ${HELLO_CPP_SOURCE_DIR}/api/echo
+)
+add_custom_target(
+    thrift_out
+    DEPENDS ${HELLO_CPP_SOURCE_DIR}/api/echo/gen-cpp
+)
+add_dependencies(thrift_out third)
+
+# test_unordered_map
 aux_source_directory(src/unordered_map unordered_map_source)
 
 add_executable(test_unordered_map ${unordered_map_source})
