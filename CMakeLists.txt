@@ -156,6 +156,40 @@ ExternalProject_Add(
 add_dependencies(third libevent)
 
 ExternalProject_Add(
+    apache_thrift_0_9_2
+    URL https://github.com/apache/thrift/archive/0.9.2.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_2
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND sh bootstrap.sh && ./configure
+        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift/build
+        --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
+        --with-openssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+        --with-libevent=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
+        --with-qt4=no
+        --with-qt5=no
+        --with-c_glib=no
+        --with-csharp=no
+        --with-java=no
+        --with-erlang=no
+        --with-nodejs=no
+        --with-lua=no
+        --with-python=no
+        --with-perl=no
+        --with-php=no
+        --with-php_extension=no
+        --with-dart=no
+        --with-ruby=no
+        --with-haskell=no
+        --with-go=no
+        --with-rs=no
+        --with-haxe=no
+        --with-dotnetcore=no
+        --with-d=no
+        --disable-shared
+)
+add_dependencies(third apache_thrift_0_9_2)
+
+ExternalProject_Add(
     apache_thrift
     URL https://github.com/apache/thrift/archive/0.11.0.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift
