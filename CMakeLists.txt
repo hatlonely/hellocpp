@@ -288,19 +288,44 @@ link_directories(
 
 # api
 add_custom_command(
-    OUTPUT ${HELLO_CPP_SOURCE_DIR}/api/echo/gen-cpp
+    OUTPUT ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0
+    OUTPUT ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_9_2
     DEPENDS ${HELLO_CPP_SOURCE_DIR}/api/echo/echo.thrift
     COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0
     COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_9_2
     COMMAND ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0/build/bin/thrift -r --gen cpp -o ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0 ${HELLO_CPP_SOURCE_DIR}/api/echo/echo.thrift
     COMMAND ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_2/build/bin/thrift -r --gen cpp -o ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_9_2 ${HELLO_CPP_SOURCE_DIR}/api/echo/echo.thrift
+    COMMAND rm ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0/gen-cpp/Service_server.skeleton.cpp
+    COMMAND rm ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_9_2/gen-cpp/Service_server.skeleton.cpp
     WORKING_DIRECTORY ${HELLO_CPP_SOURCE_DIR}/api/echo
 )
 add_custom_target(
     thrift_out
-    DEPENDS ${HELLO_CPP_SOURCE_DIR}/api/echo/gen-cpp
+    DEPENDS ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_9_2
+    DEPENDS ${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0
 )
 add_dependencies(thrift_out third)
+
+# thrift server client
+include_directories(
+    "${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0/gen-cpp"
+    "${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0/build/include"
+)
+link_directories(
+    "${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0/build/lib"
+)
+aux_source_directory(${HELLO_CPP_SOURCE_DIR}/api/echo/thrift_0_11_0/gen-cpp thrift_source)
+add_executable(server src/thrift_echo_0_11_0/server/main.cpp ${thrift_source})
+add_dependencies(server thrift_out)
+target_link_libraries(
+    server
+    thrift
+)
+add_executable(client src/thrift_echo_0_11_0/client/main.cpp ${thrift_source})
+target_link_libraries(
+    client
+    thrift
+)
 
 # test_unordered_map
 aux_source_directory(src/unordered_map unordered_map_source)
