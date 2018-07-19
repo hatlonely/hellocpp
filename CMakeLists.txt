@@ -186,8 +186,6 @@ ExternalProject_Add(
         --with-dotnetcore=no
         --with-d=no
         --disable-shared
-    BUILD_COMMAND make -j8
-    INSTALL_COMMAND make install
 )
 add_dependencies(apache_thrift openssl_openssl)
 add_dependencies(apache_thrift boostorg_boost)
