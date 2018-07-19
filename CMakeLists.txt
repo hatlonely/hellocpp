@@ -86,14 +86,14 @@ ExternalProject_Add(
 )
 add_dependencies(third open_source_parses_jsoncpp)
 
-# ExternalProject_Add(
-#     openssl_openssl
-#     URL https://github.com/openssl/openssl/archive/OpenSSL_1_0_2.zip
-#     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openssl
-#     BUILD_IN_SOURCE true
-#     CONFIGURE_COMMAND ./Configure darwin64-x86_64-cc --prefix=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
-# )
-# add_dependencies(aerospike_aerospike_client_c openssl_openssl)
+ExternalProject_Add(
+    openssl_openssl
+    URL https://github.com/openssl/openssl/archive/OpenSSL_1_0_2o.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openssl
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND ./config --prefix=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+)
+add_dependencies(third openssl_openssl)
 
 ExternalProject_Add(
     sparsehash_sparsehash
@@ -142,12 +142,74 @@ ExternalProject_Add(
 )
 add_dependencies(third tessil_robin_map)
 
+
+ExternalProject_Add(
+    libevent
+    URL https://github.com/libevent/libevent/archive/release-2.1.7-rc.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/libevent
+    CMAKE_ARGS 
+        -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
+        -DOPENSSL_ROOT=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+        -DOPENSSL_INCLUDE_DIR=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include
+        -DOPENSSL_LIBRARIES=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib
+)
+add_dependencies(third libevent)
+
+ExternalProject_Add(
+    apache_thrift
+    URL https://github.com/apache/thrift/archive/0.11.0.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND sh bootstrap.sh && ./configure
+        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift/build
+        --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
+        --with-openssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+        --with-libevent=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
+        --with-qt4=no
+        --with-qt5=no
+        --with-c_glib=no
+        --with-csharp=no
+        --with-java=no
+        --with-erlang=no
+        --with-nodejs=no
+        --with-lua=no
+        --with-python=no
+        --with-perl=no
+        --with-php=no
+        --with-php_extension=no
+        --with-dart=no
+        --with-ruby=no
+        --with-haskell=no
+        --with-go=no
+        --with-rs=no
+        --with-haxe=no
+        --with-dotnetcore=no
+        --with-d=no
+        --disable-shared
+    BUILD_COMMAND make -j8
+    INSTALL_COMMAND make install
+)
+add_dependencies(apache_thrift openssl_openssl)
+add_dependencies(apache_thrift boostorg_boost)
+add_dependencies(apache_thrift libevent)
+add_dependencies(third apache_thrift)
+
 # ExternalProject_Add(
 #     facebook_folly
-#     GIT_REPOSITORY https://github.com/facebook/folly.git
+#     URL https://github.com/facebook/folly/archive/v2018.04.09.00.zip
 #     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/folly
-#     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/folly/build
+#     CMAKE_ARGS
+#         -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/folly/build
+#         -DBOOST_ROOT=${HELLO_CPP_SOURCE_DIR}/third/boost/build
+#         -DOPENSSL_INCLUDE_DIR=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include
+#         -DOPENSSL_LIBRARIES=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib
+#         -DOPENSSL_ROOT_DIR=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/
+#         -DDOUBLE_CONVERSION_INCLUDE_DIR=${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/include
+#         -DDOUBLE_CONVERSION_LIBRARY=${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib/libdouble-conversion.a
 # )
+# add_dependencies(facebook_folly openssl_openssl)
+# add_dependencies(facebook_folly boostorg_boost)
+# add_dependencies(facebook_folly google_double_conversion)
 # add_dependencies(third facebook_folly)
 
 set(CMAKE_CXX_FLAGS "-w -g -std=c++11")
