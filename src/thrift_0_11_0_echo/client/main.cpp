@@ -11,6 +11,8 @@
 
 DEFINE_int64(threadNumber, 100, "thread number");
 DEFINE_int64(elapseTimeS, 60, "elapse seconds");
+DEFINE_string(host, "127.0.0.1", "host");
+DEFINE_int64(port, 9090, "port");
 
 int nowUs() {
     timeval now = {0, 0};
@@ -32,7 +34,7 @@ int main(int argc, char* argv[]) {
         vt.emplace_back(new std::thread([&](int idx) {
             while (true) {
                 auto t1 = nowUs();
-                auto socket = apache::thrift::stdcxx::make_shared<apache::thrift::transport::TSocket>("127.0.0.1", 9090);
+                auto socket = apache::thrift::stdcxx::make_shared<apache::thrift::transport::TSocket>(FLAGS_host, FLAGS_port);
                 socket->setConnTimeout(1000);
                 socket->setSendTimeout(1000);
                 socket->setRecvTimeout(1000);
