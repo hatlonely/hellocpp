@@ -13,7 +13,7 @@ class ServiceHandler : virtual public addservice::ServiceIf {
     }
 
     void add(addservice::Response& response, const addservice::Request& request) {
-        usleep(30);
+        usleep(30000);
         response.v = request.a + request.b;
     }
 };

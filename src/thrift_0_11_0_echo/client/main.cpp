@@ -16,11 +16,12 @@ int nowUs() {
 }
 
 int main(int argc, const char* argv[]) {
-    int threadNum = 1;
+    int threadNum = 10;
     int requestNum = 100;
 
     std::vector<std::thread*> vt;
     std::vector<int> times(threadNum);
+    auto t1 = nowUs();
     for (int i = 0; i < threadNum; i++) {
         vt.emplace_back(new std::thread([&](int idx) {
             for (int j = 0; j < requestNum; j++) {
@@ -56,10 +57,12 @@ int main(int argc, const char* argv[]) {
             t->join();
         }
     }
+    auto t2 = nowUs();
     int totalTime = 0;
     for (auto i : times) {
         totalTime += i;
     }
 
-    std::cout << totalTime / threadNum / requestNum << std::endl;
+    std::cout << "RES: " << totalTime / threadNum / requestNum << "us" << std::endl;
+    std::cout << "QPS: " << threadNum * requestNum * 1000000 / (t2 - t1) << std::endl;
 }
