@@ -1,16 +1,16 @@
+#include <gflags/gflags.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/transport/TSocket.h>
 #include <thrift/transport/TTransportUtils.h>
-#include <boost/make_shared.hpp>
-#include <gflags/gflags.h>
 #include <unistd.h>
+#include <boost/make_shared.hpp>
 #include <iostream>
 #include <thread>
 #include <vector>
 #include "Service.h"
 
-DEFINE_int64(threadNumber, 10, "thread number");
-DEFINE_int64(requestNumber, 1000, "request number");
+DEFINE_int64(threadNumber, 100, "thread number");
+DEFINE_int64(elapseTimeS, 60, "elapse seconds");
 
 int nowUs() {
     timeval now = {0, 0};
@@ -22,14 +22,15 @@ int nowUs() {
 int main(int argc, char* argv[]) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     int threadNum = FLAGS_threadNumber;
-    int requestNum = FLAGS_requestNumber;
+    int elapseTimeUs = FLAGS_elapseTimeS * 1000000;
 
     std::vector<std::thread*> vt;
-    std::vector<int> times(threadNum);
-    auto t1 = nowUs();
+    std::vector<int64_t> times(threadNum);
+    std::vector<int64_t> nums(threadNum);
+    auto t0 = nowUs();
     for (int i = 0; i < threadNum; i++) {
         vt.emplace_back(new std::thread([&](int idx) {
-            for (int j = 0; j < requestNum; j++) {
+            while (true) {
                 auto t1 = nowUs();
                 auto socket = boost::make_shared<apache::thrift::transport::TSocket>("127.0.0.1", 9090);
                 socket->setConnTimeout(1000);
@@ -54,6 +55,10 @@ int main(int argc, char* argv[]) {
                 }
                 auto t2 = nowUs();
                 times[idx] += t2 - t1;
+                nums[idx]++;
+                if (t2 - t0 > elapseTimeUs) {
+                    break;
+                }
             }
         }, i));
     }
@@ -62,12 +67,18 @@ int main(int argc, char* argv[]) {
             t->join();
         }
     }
-    auto t2 = nowUs();
-    int totalTime = 0;
+    auto t3 = nowUs();
+    int64_t totalTime = 0;
+    int64_t totalNum = 0;
     for (auto i : times) {
         totalTime += i;
     }
+    for (auto i : nums) {
+        totalNum += i;
+    }
 
-    std::cout << "RES: " << totalTime / threadNum / requestNum << "us" << std::endl;
-    std::cout << "QPS: " << threadNum * requestNum * 1000000 / (t2 - t1) << std::endl;
+    std::cout << "threadNumber: " << FLAGS_threadNumber << std::endl;
+    std::cout << "elapseTimeS: " << FLAGS_elapseTimeS << "s" << std::endl;
+    std::cout << "RES: " << totalTime / totalNum << "us" << std::endl;
+    std::cout << "QPS: " << totalNum * 1000000.0 / (t3 - t0) << std::endl;
 }
