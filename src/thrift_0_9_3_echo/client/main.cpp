@@ -2,11 +2,15 @@
 #include <thrift/transport/TSocket.h>
 #include <thrift/transport/TTransportUtils.h>
 #include <boost/make_shared.hpp>
+#include <gflags/gflags.h>
 #include <unistd.h>
 #include <iostream>
 #include <thread>
 #include <vector>
 #include "Service.h"
+
+DEFINE_int64(threadNumber, 10, "thread number");
+DEFINE_int64(requestNumber, 1000, "request number");
 
 int nowUs() {
     timeval now = {0, 0};
@@ -16,8 +20,8 @@ int nowUs() {
 }
 
 int main(int argc, const char* argv[]) {
-    int threadNum = 10;
-    int requestNum = 100;
+    int threadNum = FLAGS_threadNumber;
+    int requestNum = FLAGS_requestNumber;
 
     std::vector<std::thread*> vt;
     std::vector<int> times(threadNum);

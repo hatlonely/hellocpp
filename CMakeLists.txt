@@ -143,12 +143,12 @@ ExternalProject_Add(
 add_dependencies(third tessil_robin_map)
 
 ExternalProject_Add(
-    gflags
+    gflags_gflags
     URL https://github.com/gflags/gflags/archive/v2.2.1.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/gflags
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/gflags/build
 )
-add_dependencies(third gflags)
+add_dependencies(third gflags_gflags)
 
 ExternalProject_Add(
     libevent
@@ -318,20 +318,21 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/${thrift_version}/build/lib"
 )
 aux_source_directory(${HELLO_CPP_SOURCE_DIR}/api/echo/${thrift_version}/gen-cpp thrift_source)
-add_executable(simple_server src/${thrift_version}_echo/simple_server/main.cpp ${thrift_source})
-target_link_libraries(simple_server thrift)
-add_executable(threaded_server src/${thrift_version}_echo/threaded_server/main.cpp ${thrift_source})
-target_link_libraries(threaded_server thrift)
-add_executable(thread_pool_server src/${thrift_version}_echo/thread_pool_server/main.cpp ${thrift_source})
-target_link_libraries(thread_pool_server thrift)
-add_executable(noblocking_server src/${thrift_version}_echo/noblocking_server/main.cpp ${thrift_source})
-target_link_libraries(noblocking_server thrift thriftnb event)
-add_executable(client src/${thrift_version}_echo/client/main.cpp ${thrift_source})
-target_link_libraries(client thrift)
-add_dependencies(simple_server thrift_out)
-add_dependencies(threaded_server thrift_out)
-add_dependencies(thread_pool_server thrift_out)
-add_dependencies(noblocking_server thrift_out)
+add_executable(simple_server_${thrift_version} src/${thrift_version}_echo/simple_server/main.cpp ${thrift_source})
+target_link_libraries(simple_server_${thrift_version} thrift gflags)
+add_executable(threaded_server_${thrift_version} src/${thrift_version}_echo/threaded_server/main.cpp ${thrift_source})
+target_link_libraries(threaded_server_${thrift_version} thrift gflags)
+add_executable(thread_pool_server_${thrift_version} src/${thrift_version}_echo/thread_pool_server/main.cpp ${thrift_source})
+target_link_libraries(thread_pool_server_${thrift_version} thrift gflags)
+add_executable(noblocking_server_${thrift_version} src/${thrift_version}_echo/noblocking_server/main.cpp ${thrift_source})
+target_link_libraries(noblocking_server_${thrift_version} thrift thriftnb event gflags)
+add_executable(client_${thrift_version} src/${thrift_version}_echo/client/main.cpp ${thrift_source})
+target_link_libraries(client_${thrift_version} thrift gflags)
+add_dependencies(simple_server_${thrift_version} thrift_out)
+add_dependencies(threaded_server_${thrift_version} thrift_out)
+add_dependencies(thread_pool_server_${thrift_version} thrift_out)
+add_dependencies(noblocking_server_${thrift_version} thrift_out)
+add_dependencies(client_${thrift_version} thrift_out)
 
 # test_unordered_map
 aux_source_directory(src/unordered_map unordered_map_source)
