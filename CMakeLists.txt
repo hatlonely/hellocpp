@@ -152,13 +152,15 @@ add_dependencies(third gflags_gflags)
 
 ExternalProject_Add(
     libevent
-    URL https://github.com/libevent/libevent/archive/release-2.1.7-rc.zip
+    URL https://github.com/nmathewson/Libevent/archive/release-2.1.7-rc.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/libevent
-    CMAKE_ARGS 
-        -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
-        -DOPENSSL_ROOT=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
-        -DOPENSSL_INCLUDE_DIR=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include
-        -DOPENSSL_LIBRARIES=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND sh autogen.sh && ./configure
+        --prefix=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
+    BUILD_COMMAND
+        export C_INCLUDE_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include &&
+        export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib &&
+        make
 )
 add_dependencies(third libevent)
 
