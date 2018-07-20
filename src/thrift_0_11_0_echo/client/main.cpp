@@ -26,6 +26,9 @@ int main(int argc, const char* argv[]) {
             for (int j = 0; j < requestNum; j++) {
                 auto t1 = nowUs();
                 auto socket = apache::thrift::stdcxx::make_shared<apache::thrift::transport::TSocket>("127.0.0.1", 9090);
+                socket->setConnTimeout(1000);
+                socket->setSendTimeout(1000);
+                socket->setRecvTimeout(1000);
                 auto transport = apache::thrift::stdcxx::make_shared<apache::thrift::transport::TBufferedTransport>(socket);
                 auto protocol = apache::thrift::stdcxx::make_shared<apache::thrift::protocol::TBinaryProtocol>(transport);
                 addservice::ServiceClient client(protocol);
