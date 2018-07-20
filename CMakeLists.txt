@@ -260,8 +260,8 @@ add_dependencies(third apache_thrift_0_11_0)
 # add_dependencies(facebook_folly google_double_conversion)
 # add_dependencies(third facebook_folly)
 
-set(CMAKE_CXX_FLAGS "-w -g -std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE "-w -g -O2 -std=c++11")
+set(CMAKE_CXX_FLAGS "-w -g -std=c++11 -lpthread")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 include_directories(
     "${HELLO_CPP_SOURCE_DIR}/include"
@@ -325,7 +325,7 @@ target_link_libraries(threaded_server_${thrift_version} thrift gflags)
 add_executable(thread_pool_server_${thrift_version} src/${thrift_version}_echo/thread_pool_server/main.cpp ${thrift_source})
 target_link_libraries(thread_pool_server_${thrift_version} thrift gflags)
 add_executable(noblocking_server_${thrift_version} src/${thrift_version}_echo/noblocking_server/main.cpp ${thrift_source})
-target_link_libraries(noblocking_server_${thrift_version} thrift thriftnb event gflags)
+target_link_libraries(noblocking_server_${thrift_version} thriftnb thrift event gflags)
 add_executable(client_${thrift_version} src/${thrift_version}_echo/client/main.cpp ${thrift_source})
 target_link_libraries(client_${thrift_version} thrift gflags)
 add_dependencies(simple_server_${thrift_version} thrift_out)
