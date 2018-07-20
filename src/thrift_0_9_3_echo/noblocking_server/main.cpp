@@ -1,23 +1,23 @@
+#include <gflags/gflags.h>
+#include <thrift/concurrency/PlatformThreadFactory.h>
+#include <thrift/concurrency/ThreadManager.h>
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TNonblockingServer.h>
-#include <thrift/concurrency/ThreadManager.h>
-#include <thrift/concurrency/PlatformThreadFactory.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/transport/TServerSocket.h>
 #include <boost/make_shared.hpp>
-#include <gflags/gflags.h>
 #include "Service.h"
 
 DEFINE_int64(threadNumber, 20, "thread number");
 DEFINE_int64(sleepTimeMs, 30, "sleep time millseconds");
 
 class ServiceHandler : virtual public addservice::ServiceIf {
-public:
+   public:
     ServiceHandler() {
     }
-    
+
     void add(addservice::Response& response, const addservice::Request& request) {
-        usleep(FLAGS_sleepTimeMs);
+        usleep(FLAGS_sleepTimeMs * 1000);
         response.v = request.a + request.b;
     }
 };
@@ -25,7 +25,7 @@ public:
 int main(int argc, char* argv[]) {
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     int port = 9090;
-    
+
     auto threadManager = apache::thrift::concurrency::ThreadManager::newSimpleThreadManager(FLAGS_threadNumber);
     threadManager->threadFactory(boost::make_shared<apache::thrift::concurrency::PlatformThreadFactory>());
     threadManager->start();
