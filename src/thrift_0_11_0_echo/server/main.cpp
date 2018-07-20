@@ -17,12 +17,11 @@ using namespace ::addservice;
 class ServiceHandler : virtual public ServiceIf {
    public:
     ServiceHandler() {
-        // Your initialization goes here
     }
 
-    void add(Response& _return, const Request& request) {
-        // Your implementation goes here
-        printf("add\n");
+    void add(Response& response, const Request& request) {
+        usleep(30);
+        response.v = request.a + request.b;
     }
 };
 

@@ -155,13 +155,13 @@ ExternalProject_Add(
 add_dependencies(third libevent)
 
 ExternalProject_Add(
-    apache_thrift_0_9_2
-    URL https://github.com/apache/thrift/archive/0.9.2.zip
-    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_2
+    apache_thrift_0_9_3
+    URL https://github.com/apache/thrift/archive/0.9.3.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_3
     BUILD_IN_SOURCE true
     CONFIGURE_COMMAND sh bootstrap.sh &&
         ./configure
-        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_2/build
+        --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_3/build
         --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
         --with-libevent=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
         --with-qt4=no
@@ -192,10 +192,10 @@ ExternalProject_Add(
         export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib &&
         make
 )
-add_dependencies(apache_thrift_0_9_2 openssl_openssl)
-add_dependencies(apache_thrift_0_9_2 boostorg_boost)
-add_dependencies(apache_thrift_0_9_2 libevent)
-add_dependencies(third apache_thrift_0_9_2)
+add_dependencies(apache_thrift_0_9_3 openssl_openssl)
+add_dependencies(apache_thrift_0_9_3 boostorg_boost)
+add_dependencies(apache_thrift_0_9_3 libevent)
+add_dependencies(third apache_thrift_0_9_3)
 
 ExternalProject_Add(
     apache_thrift_0_11_0
