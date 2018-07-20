@@ -20,6 +20,7 @@ int nowUs() {
 }
 
 int main(int argc, const char* argv[]) {
+    gflags::ParseCommandLineFlags(&argc, &argv, true);
     int threadNum = FLAGS_threadNumber;
     int requestNum = FLAGS_requestNumber;
 
