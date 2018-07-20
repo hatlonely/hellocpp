@@ -156,7 +156,7 @@ ExternalProject_Add(
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/libevent
     CMAKE_ARGS 
         -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
-        -DOPENSSL_ROOT=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+        -DOPENSSL_ROOT_DIR=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
         -DOPENSSL_INCLUDE_DIR=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include
         -DOPENSSL_LIBRARIES=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib
 )
