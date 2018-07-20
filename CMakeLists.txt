@@ -310,11 +310,20 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/${thrift_version}/build/lib"
 )
 aux_source_directory(${HELLO_CPP_SOURCE_DIR}/api/echo/${thrift_version}/gen-cpp thrift_source)
-add_executable(server src/${thrift_version}_echo/server/main.cpp ${thrift_source})
-add_dependencies(server thrift_out)
-target_link_libraries(server thrift)
+add_executable(simple_server src/${thrift_version}_echo/simple_server/main.cpp ${thrift_source})
+target_link_libraries(simple_server thrift)
+add_executable(threaded_server src/${thrift_version}_echo/threaded_server/main.cpp ${thrift_source})
+target_link_libraries(threaded_server thrift)
+add_executable(thread_pool_server src/${thrift_version}_echo/thread_pool_server/main.cpp ${thrift_source})
+target_link_libraries(thread_pool_server thrift)
+add_executable(noblocking_server src/${thrift_version}_echo/noblocking_server/main.cpp ${thrift_source})
+target_link_libraries(noblocking_server thrift)
 add_executable(client src/${thrift_version}_echo/client/main.cpp ${thrift_source})
 target_link_libraries(client thrift)
+add_dependencies(simple_server thrift_out)
+add_dependencies(threaded_server thrift_out)
+add_dependencies(thread_pool_server thrift_out)
+add_dependencies(noblocking_server thrift_out)
 
 # test_unordered_map
 aux_source_directory(src/unordered_map unordered_map_source)
