@@ -143,6 +143,14 @@ ExternalProject_Add(
 add_dependencies(third tessil_robin_map)
 
 ExternalProject_Add(
+    gflags
+    URL https://github.com/gflags/gflags/archive/v2.2.1.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/gflags
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/gflags/build
+)
+add_dependencies(third gflags)
+
+ExternalProject_Add(
     libevent
     URL https://github.com/libevent/libevent/archive/release-2.1.7-rc.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/libevent
@@ -270,6 +278,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/include"
 )
 
 link_directories(
@@ -282,8 +291,7 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/lib"
-    "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/lib"
-    "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/lib"
 )
 
 # api
