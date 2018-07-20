@@ -1,5 +1,7 @@
 xcode/
+xcode2/
 build/
+build2/
 third/
 .vscode/
 gen-cpp/
