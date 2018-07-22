@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     apache::thrift::server::TNonblockingServer server(
         apache::thrift::stdcxx::make_shared<addservice::ServiceProcessorFactory>(
             apache::thrift::stdcxx::make_shared<ServiceCloneFactory>()),
-        apache::thrift::stdcxx::make_shared<::apache::thrift::protocol::TBinaryProtocolFactory>(),
+        apache::thrift::stdcxx::make_shared<apache::thrift::protocol::TBinaryProtocolFactory>(),
         apache::thrift::stdcxx::make_shared<apache::thrift::transport::TNonblockingServerSocket>(port),
         threadManager);
     server.serve();

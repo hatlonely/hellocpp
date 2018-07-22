@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
             boost::make_shared<ServiceCloneFactory>()),
         boost::make_shared<apache::thrift::transport::TServerSocket>(port),
         boost::make_shared<apache::thrift::transport::TBufferedTransportFactory>(),
-        boost::make_shared<::apache::thrift::protocol::TBinaryProtocolFactory>());
+        boost::make_shared<apache::thrift::protocol::TBinaryProtocolFactory>());
     server.serve();
     return 0;
 }

@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     apache::thrift::server::TNonblockingServer server(
         boost::make_shared<addservice::ServiceProcessorFactory>(
             boost::make_shared<ServiceCloneFactory>()),
-        boost::make_shared<::apache::thrift::protocol::TBinaryProtocolFactory>(),
+        boost::make_shared<apache::thrift::protocol::TBinaryProtocolFactory>(),
         port,
         threadManager);
     server.serve();

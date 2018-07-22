@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
             apache::thrift::stdcxx::make_shared<ServiceCloneFactory>()),
         apache::thrift::stdcxx::make_shared<apache::thrift::transport::TServerSocket>(port),
         apache::thrift::stdcxx::make_shared<apache::thrift::transport::TBufferedTransportFactory>(),
-        apache::thrift::stdcxx::make_shared<::apache::thrift::protocol::TBinaryProtocolFactory>());
+        apache::thrift::stdcxx::make_shared<apache::thrift::protocol::TBinaryProtocolFactory>());
     server.serve();
     return 0;
 }
