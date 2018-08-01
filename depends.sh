@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-sudo yum install byacc
-sudo yum install bison
-sudo yum install flex
-sudo yum install libtool
-sudo yum install openssl openssl-devel
-sudo yum install libevent libevent-devel
+sudo yum -y install byacc
+sudo yum -y install bison
+sudo yum -y install flex
+sudo yum -y install libtool
+sudo yum -y install openssl openssl-devel
+sudo yum -y install libevent libevent-devel
