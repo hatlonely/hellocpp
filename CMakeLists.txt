@@ -91,7 +91,7 @@ ExternalProject_Add(
     URL https://github.com/openssl/openssl/archive/OpenSSL_1_0_2o.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openssl
     BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND ./config --prefix=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+    CONFIGURE_COMMAND ./config -fPIC --prefix=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
 )
 add_dependencies(third openssl_openssl)
 
