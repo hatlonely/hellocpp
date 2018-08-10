@@ -54,7 +54,7 @@ size_t rand_std_uniform_int_distribution_static() {
     return dis(mt);
 }
 
-void test_rand(std::string name, size_t (*randfunc)()) {
+void test_rand(const std::string& name, size_t (*randfunc)()) {
     auto                      threadNum = 16;
     std::vector<std::thread*> vt;
     std::vector<size_t>       counter(threadNum);
@@ -89,18 +89,18 @@ void test_rand(std::string name, size_t (*randfunc)()) {
     }
 
     double entropy = 0.0;
-    for (auto [key, val] : times) {
-        if (val == 0) {
+    for (const auto& kv : times) {
+        if (kv.second == 0) {
             continue;
         }
-        auto p = double(val) / double(threadNum);
+        auto p = double(kv.second) / double(threadNum);
         entropy -= p * log(p);
     }
 
     double variance = 0.0;
     double avg      = double(threadNum) / double(randMax);
-    for (auto [key, val] : times) {
-        variance += (double(val) - avg) * (double(val) - avg);
+    for (const auto& kv : times) {
+        variance += (double(kv.second) - avg) * (double(kv.second) - avg);
     }
 
     std::cout << std::setw(50) << std::setiosflags(std::ios::left) << name << " => " << entropy << ", " << variance << std::endl;
@@ -121,8 +121,9 @@ int main(int argc, const char* argv[]) {
         std::make_tuple("std::uniform_int_distribution_static", rand_std_uniform_int_distribution),
         std::make_tuple("static std::uniform_int_distribution_static", rand_std_uniform_int_distribution_static),
     };
-    for (auto nf : v) {
-        auto [name, func] = nf;
+    for (const auto& nf : v) {
+        auto name = std::get<0>(nf);
+        auto func = std::get<1>(nf);
         test_rand(name, func);
     }
 }
