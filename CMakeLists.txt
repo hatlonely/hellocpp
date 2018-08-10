@@ -285,6 +285,7 @@ include_directories(
 
 link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/gtest/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/boost/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/protobuf/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/murmur3/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/hiredis-vip/build/lib"
@@ -358,5 +359,15 @@ add_custom_target(
     DEPENDS ${HELLO_CPP_BINARY_DIR}/test_unordered_map.svg
 )
 
+# test_random
+aux_source_directory(src/random random_source)
+add_executable(test_random ${random_source})
+target_link_libraries(
+    test_random
+    boost_system
+    boost_thread
+)
+
 enable_testing()
 add_test(NAME test_unordered_map COMMAND test_unordered_map)
+add_test(NAME test_random COMMAND test_random)
