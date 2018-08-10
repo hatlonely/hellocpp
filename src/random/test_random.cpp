@@ -69,6 +69,17 @@ size_t rand_std_uniform_int_distribution_static() {
     return dis(mt);
 }
 
+size_t rand_std_uniform_int_distribution_static_mutex() {
+    static std::random_device                      rd;
+    static std::mt19937_64                         mt(rd());
+    static std::uniform_int_distribution<unsigned> dis(0, std::numeric_limits<int>::max());
+    static std::mutex                              mutex;
+    mutex.lock();
+    auto r = dis(mt);
+    mutex.unlock();
+    return r;
+}
+
 size_t atomic_inc() {
     static std::atomic<int> ai;
     ai++;
