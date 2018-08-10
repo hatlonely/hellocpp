@@ -165,6 +165,7 @@ int main(int argc, const char* argv[]) {
         std::make_tuple("static std::mt19937_64", rand_std_mt19937_64_static),
         std::make_tuple("std::uniform_int_distribution_static", rand_std_uniform_int_distribution),
         std::make_tuple("static std::uniform_int_distribution_static", rand_std_uniform_int_distribution_static),
+        std::make_tuple("static std::uniform_int_distribution_static_mutex", rand_std_uniform_int_distribution_static_mutex),
         std::make_tuple("atomic int", atomic_inc),
     };
 
