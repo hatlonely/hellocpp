@@ -69,6 +69,13 @@ size_t rand_std_uniform_int_distribution_static() {
     return dis(mt);
 }
 
+size_t rand_std_uniform_int_distribution_thread_local() {
+    thread_local std::random_device                      rd;
+    thread_local std::mt19937_64                         mt(rd());
+    thread_local std::uniform_int_distribution<unsigned> dis(0, std::numeric_limits<int>::max());
+    return dis(mt);
+}
+
 size_t rand_std_uniform_int_distribution_static_mutex() {
     static std::random_device                      rd;
     static std::mt19937_64                         mt(rd());
@@ -156,16 +163,17 @@ int main(int argc, const char* argv[]) {
 
     auto v = {
         std::make_tuple("rand", rand_rand),
-        std::make_tuple("rand mutex", rand_rand_mutex),
+        std::make_tuple("mutex rand", rand_rand_mutex),
         std::make_tuple("rand_r", rand_rand_r),
-        std::make_tuple("thread local rand_r", rand_rand_r_thread_local),
+        std::make_tuple("thread_local rand_r", rand_rand_r_thread_local),
         std::make_tuple("std::random_device", rand_std_random_device),
         std::make_tuple("static std::random_device", rand_std_random_device_static),
         std::make_tuple("std::mt19937_64", rand_std_mt19937_64),
         std::make_tuple("static std::mt19937_64", rand_std_mt19937_64_static),
         std::make_tuple("std::uniform_int_distribution_static", rand_std_uniform_int_distribution),
         std::make_tuple("static std::uniform_int_distribution_static", rand_std_uniform_int_distribution_static),
-        std::make_tuple("static std::uniform_int_distribution_static_mutex", rand_std_uniform_int_distribution_static_mutex),
+        std::make_tuple("thread_local std::uniform_int_distribution_static", rand_std_uniform_int_distribution_thread_local),
+        std::make_tuple("static mutex std::uniform_int_distribution_static", rand_std_uniform_int_distribution_static_mutex),
         std::make_tuple("atomic int", atomic_inc),
     };
 
