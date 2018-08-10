@@ -28,6 +28,11 @@ size_t rand_rand_r() {
     return rand_r(&seed);
 }
 
+size_t rand_rand_r_thread_local() {
+    thread_local unsigned int seed = std::hash<std::thread::id>{}(std::this_thread::get_id());
+    return rand_r(&seed);
+}
+
 size_t rand_std_random_device() {
     std::random_device rd;
     return rd();
@@ -142,6 +147,7 @@ int main(int argc, const char* argv[]) {
         std::make_tuple("rand", rand_rand),
         std::make_tuple("rand mutex", rand_rand_mutex),
         std::make_tuple("rand_r", rand_rand_r),
+        std::make_tuple("thread local rand_r", rand_rand_r_thread_local),
         std::make_tuple("std::random_device", rand_std_random_device),
         std::make_tuple("static std::random_device", rand_std_random_device_static),
         std::make_tuple("std::mt19937_64", rand_std_mt19937_64),
