@@ -14,7 +14,7 @@ size_t rand_rand() {
 }
 
 size_t rand_rand_r() {
-    static unsigned int seed = 123;
+    static unsigned int seed = time(0);
     return rand_r(&seed);
 }
 
@@ -54,7 +54,7 @@ size_t rand_std_uniform_int_distribution_static() {
     return dis(mt);
 }
 
-void test_rand(const std::string& name, size_t (*randfunc)()) {
+std::tuple<std::unordered_map<size_t, size_t>, size_t, size_t> test_rand(const std::string& name, size_t (*randfunc)()) {
     auto                      threadNum = 16;
     std::vector<std::thread*> vt;
     std::vector<size_t>       counter(threadNum);
@@ -87,27 +87,28 @@ void test_rand(const std::string& name, size_t (*randfunc)()) {
     for (auto i : counter) {
         times[i]++;
     }
+    return std::make_tuple(times, threadNum, randMax);
+}
 
-    double entropy = 0.0;
+double entropy(const std::unordered_map<size_t, size_t>& times, size_t threadNum, size_t randMax) {
+    double e = 0.0;
     for (const auto& kv : times) {
         if (kv.second == 0) {
             continue;
         }
         auto p = double(kv.second) / double(threadNum);
-        entropy -= p * log(p);
+        e -= p * log(p);
     }
+    return e;
+}
 
-    double variance = 0.0;
-    double avg      = double(threadNum) / double(randMax);
+double variance(const std::unordered_map<size_t, size_t>& times, size_t threadNum, size_t randMax) {
+    double v   = 0.0;
+    double avg = double(threadNum) / double(randMax);
     for (const auto& kv : times) {
-        variance += (double(kv.second) - avg) * (double(kv.second) - avg);
+        v += (double(kv.second) - avg) * (double(kv.second) - avg);
     }
-
-    std::cout << std::setw(50) << std::setiosflags(std::ios::left) << name << " => " << entropy << ", " << variance << std::endl;
-    // for (auto [key, val] : times) {
-    //     std::cout << key << " => " << val << std::endl;
-    // }
-    // std::cout << std::endl;
+    return v;
 }
 
 int main(int argc, const char* argv[]) {
@@ -124,6 +125,19 @@ int main(int argc, const char* argv[]) {
     for (const auto& nf : v) {
         auto name = std::get<0>(nf);
         auto func = std::get<1>(nf);
-        test_rand(name, func);
+
+        int                                threadNum = 0;
+        int                                randMax   = 0;
+        std::unordered_map<size_t, size_t> times;
+        std::tie(times, threadNum, randMax) = test_rand(name, func);
+
+        auto e = entropy(times, threadNum, randMax);
+        auto v = variance(times, threadNum, randMax);
+
+        std::cout << std::setw(50) << std::setiosflags(std::ios::left) << name << " => " << e << ", " << v << std::endl;
+        // for (auto [key, val] : times) {
+        //     std::cout << key << " => " << val << std::endl;
+        // }
+        // std::cout << std::endl;
     }
 }
