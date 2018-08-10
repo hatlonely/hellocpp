@@ -14,7 +14,7 @@ size_t rand_rand() {
 }
 
 size_t rand_rand_r() {
-    static unsigned int seed = time(0);
+    static unsigned int seed = time(nullptr);
     return rand_r(&seed);
 }
 
@@ -112,6 +112,8 @@ double variance(const std::unordered_map<size_t, size_t>& times, size_t threadNu
 }
 
 int main(int argc, const char* argv[]) {
+    srand(time(nullptr));
+
     auto v = {
         std::make_tuple("rand", rand_rand),
         std::make_tuple("rand_r", rand_rand_r),
