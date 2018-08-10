@@ -14,6 +14,14 @@ size_t rand_rand() {
     return rand();
 }
 
+size_t rand_rand_mutex() {
+    static std::mutex mutex;
+    mutex.lock();
+    auto r = rand();
+    mutex.unlock();
+    return r;
+}
+
 size_t rand_rand_r() {
     static unsigned int seed = time(nullptr);
     return rand_r(&seed);
@@ -131,6 +139,7 @@ int main(int argc, const char* argv[]) {
 
     auto v = {
         std::make_tuple("rand", rand_rand),
+        std::make_tuple("rand", rand_rand_mutex),
         std::make_tuple("rand_r", rand_rand_r),
         std::make_tuple("std::random_device", rand_std_random_device),
         std::make_tuple("static std::random_device", rand_std_random_device_static),
