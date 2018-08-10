@@ -1,3 +1,4 @@
+#include <atomic>
 #include <boost/thread/shared_mutex.hpp>
 #include <cmath>
 #include <cstdlib>
@@ -52,6 +53,12 @@ size_t rand_std_uniform_int_distribution_static() {
     static std::mt19937_64                         mt(rd());
     static std::uniform_int_distribution<unsigned> dis(0, std::numeric_limits<int>::max());
     return dis(mt);
+}
+
+size_t atomic_inc() {
+    static std::atomic<int> ai;
+    ai++;
+    return ai;
 }
 
 std::tuple<std::unordered_map<size_t, size_t>, size_t, size_t> test_rand(const std::string& name, size_t (*randfunc)()) {
@@ -111,6 +118,14 @@ double variance(const std::unordered_map<size_t, size_t>& times, size_t threadNu
     return v;
 }
 
+double avg(const std::vector<double>& vd) {
+    double sum = 0.0;
+    for (auto d : vd) {
+        sum += d;
+    }
+    return sum / double(vd.size());
+}
+
 int main(int argc, const char* argv[]) {
     srand(time(nullptr));
 
@@ -123,20 +138,27 @@ int main(int argc, const char* argv[]) {
         std::make_tuple("static std::mt19937_64", rand_std_mt19937_64_static),
         std::make_tuple("std::uniform_int_distribution_static", rand_std_uniform_int_distribution),
         std::make_tuple("static std::uniform_int_distribution_static", rand_std_uniform_int_distribution_static),
+        std::make_tuple("atomic int", atomic_inc),
     };
+
     for (const auto& nf : v) {
         auto name = std::get<0>(nf);
         auto func = std::get<1>(nf);
 
-        int                                threadNum = 0;
-        int                                randMax   = 0;
-        std::unordered_map<size_t, size_t> times;
-        std::tie(times, threadNum, randMax) = test_rand(name, func);
+        auto                num = 100;
+        std::vector<double> es(num);
+        std::vector<double> vs(num);
+        for (int i = 0; i < num; i++) {
+            int                                threadNum = 0;
+            int                                randMax   = 0;
+            std::unordered_map<size_t, size_t> times;
+            std::tie(times, threadNum, randMax) = test_rand(name, func);
 
-        auto e = entropy(times, threadNum, randMax);
-        auto v = variance(times, threadNum, randMax);
+            es[i] = entropy(times, threadNum, randMax);
+            vs[i] = variance(times, threadNum, randMax);
+        }
 
-        std::cout << std::setw(50) << std::setiosflags(std::ios::left) << name << " => " << e << ", " << v << std::endl;
+        std::cout << std::setw(50) << std::setiosflags(std::ios::left) << name << " => " << avg(es) << ", " << avg(vs) << std::endl;
         // for (auto [key, val] : times) {
         //     std::cout << key << " => " << val << std::endl;
         // }
