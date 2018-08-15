@@ -192,12 +192,12 @@ int main(int argc, const char* argv[]) {
 
             es[i] = entropy(times, threadNum, randMax);
             vs[i] = variance(times, threadNum, randMax);
-        }
 
-        std::cout << std::setw(50) << std::setiosflags(std::ios::left) << name << " => " << avg(es) << ", " << avg(vs) << std::endl;
-        // for (auto [key, val] : times) {
-        //     std::cout << key << " => " << val << std::endl;
-        // }
-        // std::cout << std::endl;
+            std::cout << std::setw(50) << std::setiosflags(std::ios::left) << name << " => " << avg(es) << ", " << avg(vs) << std::endl;
+            for (const auto& kv : times) {
+                std::cout << kv.first << " => " << kv.second << std::endl;
+            }
+            std::cout << std::endl;
+        }
     }
 }
