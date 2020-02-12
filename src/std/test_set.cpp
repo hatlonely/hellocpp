@@ -24,10 +24,8 @@ TEST(testSet, case1) {
         std::set<int> si = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         EXPECT_EQ(*si.lower_bound(6), 6);  // >= 6
         EXPECT_EQ(*si.upper_bound(6), 7);  // > 6
-    }
-    {
-        std::set<int> si = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        auto          p  = si.equal_range(6);
+
+        auto p = si.equal_range(6);
         EXPECT_EQ(*p.first, 6);   // >= 6
         EXPECT_EQ(*p.second, 7);  // > 6
     }
