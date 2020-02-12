@@ -374,6 +374,15 @@ target_link_libraries(
     boost_thread
 )
 
+# test std
+aux_source_directory(src/std std_source)
+add_executable(test_std ${std_source})
+target_link_libraries(
+    test_std
+    gtest
+)
+
 enable_testing()
 add_test(NAME test_unordered_map COMMAND test_unordered_map)
 add_test(NAME test_random COMMAND test_random)
+add_test(NAME test_std COMMAND test_std)
