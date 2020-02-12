@@ -162,6 +162,7 @@ ExternalProject_Add(
         export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib &&
         make
 )
+add_dependencies(libevent openssl_openssl)
 add_dependencies(third libevent)
 
 ExternalProject_Add(
@@ -321,20 +322,25 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/${thrift_version}/build/lib"
 )
 aux_source_directory(${HELLO_CPP_SOURCE_DIR}/api/echo/${thrift_version}/gen-cpp thrift_source)
+
 add_executable(simple_server_${thrift_version} src/${thrift_version}_echo/simple_server/main.cpp ${thrift_source})
 target_link_libraries(simple_server_${thrift_version} thrift gflags)
+add_dependencies(simple_server_${thrift_version} thrift_out)
+
 add_executable(threaded_server_${thrift_version} src/${thrift_version}_echo/threaded_server/main.cpp ${thrift_source})
 target_link_libraries(threaded_server_${thrift_version} thrift gflags)
+add_dependencies(threaded_server_${thrift_version} thrift_out)
+
 add_executable(thread_pool_server_${thrift_version} src/${thrift_version}_echo/thread_pool_server/main.cpp ${thrift_source})
 target_link_libraries(thread_pool_server_${thrift_version} thrift gflags)
+add_dependencies(thread_pool_server_${thrift_version} thrift_out)
+
 add_executable(noblocking_server_${thrift_version} src/${thrift_version}_echo/noblocking_server/main.cpp ${thrift_source})
 target_link_libraries(noblocking_server_${thrift_version} thriftnb thrift event gflags)
+add_dependencies(noblocking_server_${thrift_version} thrift_out)
+
 add_executable(client_${thrift_version} src/${thrift_version}_echo/client/main.cpp ${thrift_source})
 target_link_libraries(client_${thrift_version} thrift gflags)
-add_dependencies(simple_server_${thrift_version} thrift_out)
-add_dependencies(threaded_server_${thrift_version} thrift_out)
-add_dependencies(thread_pool_server_${thrift_version} thrift_out)
-add_dependencies(noblocking_server_${thrift_version} thrift_out)
 add_dependencies(client_${thrift_version} thrift_out)
 
 # test_unordered_map
