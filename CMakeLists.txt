@@ -263,7 +263,7 @@ add_dependencies(third apache_thrift_0_11_0)
 # add_dependencies(facebook_folly google_double_conversion)
 # add_dependencies(third facebook_folly)
 
-set(CMAKE_CXX_FLAGS "-w -g -std=c++11 -lpthread")
+set(CMAKE_CXX_FLAGS "-w -g -std=c++2a -lpthread")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 include_directories(
