@@ -32,20 +32,6 @@ TEST(testSet, case1) {
     }
 }
 
-TEST(testMultiSet, case1) {
-    {
-        std::multiset<int> si = {1, 1, 1, 2, 3, 3, 4, 4, 5};
-        EXPECT_FALSE(si.empty());
-        EXPECT_EQ(si.size(), 9);
-        EXPECT_EQ(si.count(1), 3);
-
-        si.insert(1);
-        EXPECT_EQ(si.count(1), 4);
-        si.erase(1);
-        EXPECT_EQ(si.count(1), 0);
-    }
-}
-
 TEST(testUnorderedSet, case1) {
     {
         std::unordered_set<int> si = {1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -68,4 +54,28 @@ TEST(testUnorderedSet, case1) {
         EXPECT_NEAR(si.load_factor(), 0.1, 0.001);
         EXPECT_EQ(si.max_load_factor(), 1);
     }
+}
+
+TEST(testMultiSet, case1) {
+    std::multiset<int> si = {1, 1, 1, 2, 3, 3, 4, 4, 5};
+    EXPECT_FALSE(si.empty());
+    EXPECT_EQ(si.size(), 9);
+    EXPECT_EQ(si.count(1), 3);
+
+    si.insert(1);
+    EXPECT_EQ(si.count(1), 4);
+    si.erase(1);
+    EXPECT_EQ(si.count(1), 0);
+}
+
+TEST(testUnorderedMultiSet, case1) {
+    std::unordered_multiset<int> si =  {1, 1, 1, 2, 3, 3, 4, 4, 5};
+    EXPECT_FALSE(si.empty());
+    EXPECT_EQ(si.size(), 9);
+    EXPECT_EQ(si.count(1), 3);
+
+    si.insert(1);
+    EXPECT_EQ(si.count(1), 4);
+    si.erase(1);
+    EXPECT_EQ(si.count(1), 0);
 }
