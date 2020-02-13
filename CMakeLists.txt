@@ -11,7 +11,6 @@ ExternalProject_Add(
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/gtest
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/gtest/build -DBUILD_SHARED_LIBS=OFF
 )
-add_dependencies(third google_gtest)
 
 ExternalProject_Add(
     google_protobuf
@@ -22,18 +21,16 @@ ExternalProject_Add(
     BUILD_COMMAND sh autogen.sh && ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/protobuf/build --disable-shared && make -j8
     INSTALL_COMMAND make install
 )
-add_dependencies(third google_protobuf)
 
 ExternalProject_Add(
     boostorg_boost
-    URL https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz
+    URL https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/boost
     BUILD_IN_SOURCE true
     CONFIGURE_COMMAND ""
     BUILD_COMMAND sh bootstrap.sh && ./b2 link=static -j8
     INSTALL_COMMAND ./b2 install --prefix=${HELLO_CPP_SOURCE_DIR}/third/boost/build
 )
-add_dependencies(third boostorg_boost)
 
 ExternalProject_Add(
     peterscott_murmur3
@@ -44,7 +41,6 @@ ExternalProject_Add(
     BUILD_COMMAND gcc -c murmur3.c && ar rcs libmurmur3.a murmur3.o
     INSTALL_COMMAND mkdir -p ../../build/{include,lib} && cp murmur3.h ../../build/include && cp libmurmur3.a ../../build/lib
 )
-add_dependencies(third peterscott_murmur3)
 
 ExternalProject_Add(
     vipshop_hiredis_vip
@@ -56,7 +52,6 @@ ExternalProject_Add(
     INSTALL_COMMAND PREFIX=${HELLO_CPP_SOURCE_DIR}/third/hiredis-vip/build make install
     COMMAND rm -rf ${HELLO_CPP_SOURCE_DIR}/third/hiredis-vip/build/lib/*.dylib
 )
-add_dependencies(third vipshop_hiredis_vip)
 
 # ExternalProject_Add(
 #     aerospike_aerospike_client_c
@@ -84,16 +79,14 @@ ExternalProject_Add(
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/jsoncpp
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/jsoncpp/build -DBUILD_SHARED_LIBS=OFF
 )
-add_dependencies(third open_source_parses_jsoncpp)
 
 ExternalProject_Add(
     openssl_openssl
     URL https://github.com/openssl/openssl/archive/OpenSSL_1_0_2o.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openssl
     BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND ./config -fPIC --prefix=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+    CONFIGURE_COMMAND KERNEL_BITS=64 ./config -fPIC --prefix=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
 )
-add_dependencies(third openssl_openssl)
 
 ExternalProject_Add(
     sparsehash_sparsehash
@@ -103,7 +96,6 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/sparsehash/build
     BUILD_COMMAND make
 )
-add_dependencies(third sparsehash_sparsehash)
 
 ExternalProject_Add(
     google_double_conversion
@@ -111,7 +103,6 @@ ExternalProject_Add(
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/double_conversion
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build
 )
-add_dependencies(third google_double_conversion)
 
 ExternalProject_Add(
     google_gperftools
@@ -121,7 +112,6 @@ ExternalProject_Add(
     CONFIGURE_COMMAND ""
     BUILD_COMMAND sh autogen.sh && ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/gperftools/build && make -j8
 )
-add_dependencies(third google_gperftools)
 
 ExternalProject_Add(
     tessil_hopscotch_map
@@ -130,7 +120,6 @@ ExternalProject_Add(
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build
     INSTALL_COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/ && cp -r ${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/src/tessil_hopscotch_map/include ${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/
 )
-add_dependencies(third tessil_hopscotch_map)
 
 ExternalProject_Add(
     tessil_robin_map
@@ -140,7 +129,6 @@ ExternalProject_Add(
     BUILD_COMMAND ""
     INSTALL_COMMAND mkdir -p ${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include && cp -r ${HELLO_CPP_SOURCE_DIR}/third/robin_map/src/tessil_robin_map/tsl ${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include
 )
-add_dependencies(third tessil_robin_map)
 
 ExternalProject_Add(
     gflags_gflags
@@ -148,7 +136,6 @@ ExternalProject_Add(
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/gflags
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/gflags/build
 )
-add_dependencies(third gflags_gflags)
 
 ExternalProject_Add(
     libevent
@@ -163,18 +150,30 @@ ExternalProject_Add(
         make
 )
 add_dependencies(libevent openssl_openssl)
-add_dependencies(third libevent)
 
+ExternalProject_Add(
+    bison
+    URL http://mirrors.nju.edu.cn/gnu/bison/bison-3.0.5.tar.gz
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/bison
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/bison/build
+    BUILD_COMMAND make -j8
+)
+
+# 这个版本 --with-openssl 有点问题 https://github.com/tuna/issues/issues/326
 ExternalProject_Add(
     apache_thrift_0_9_3
     URL https://github.com/apache/thrift/archive/0.9.3.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_3
     BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND sh bootstrap.sh &&
-        ./configure
+    CONFIGURE_COMMAND
+        export PATH=${HELLO_CPP_SOURCE_DIR}/third/bison/build/bin:$ENV{PATH} &&
+        sh bootstrap.sh &&
+        CPPFLAGS=-I${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include LDFLAGS=-L${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib ./configure
         --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift_0_9_3/build
         --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
         --with-libevent=${HELLO_CPP_SOURCE_DIR}/third/libevent/build
+        --with-openssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
         --with-qt4=no
         --with-qt5=no
         --with-c_glib=no
@@ -199,21 +198,24 @@ ExternalProject_Add(
         --disable-tests
         --disable-tutorial
     BUILD_COMMAND
+        export PATH=${HELLO_CPP_SOURCE_DIR}/third/bison/build/bin:$ENV{PATH} &&
         export CPLUS_INCLUDE_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include &&
         export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib &&
-        make
+        make -j8
 )
 add_dependencies(apache_thrift_0_9_3 openssl_openssl)
 add_dependencies(apache_thrift_0_9_3 boostorg_boost)
 add_dependencies(apache_thrift_0_9_3 libevent)
-add_dependencies(third apache_thrift_0_9_3)
+add_dependencies(apache_thrift_0_9_3 bison)
 
 ExternalProject_Add(
     apache_thrift_0_11_0
     URL https://github.com/apache/thrift/archive/0.11.0.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0
     BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND sh bootstrap.sh && ./configure
+    CONFIGURE_COMMAND
+        export PATH=${HELLO_CPP_SOURCE_DIR}/third/bison/build/bin:$ENV{PATH} &&
+        sh bootstrap.sh && ./configure
         --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0/build
         --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
         --with-openssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
@@ -239,11 +241,14 @@ ExternalProject_Add(
         --with-dotnetcore=no
         --with-d=no
         --disable-shared
+    BUILD_COMMAND
+        export PATH=${HELLO_CPP_SOURCE_DIR}/third/bison/build/bin:$ENV{PATH} &&
+        make -j8
 )
 add_dependencies(apache_thrift_0_11_0 openssl_openssl)
 add_dependencies(apache_thrift_0_11_0 boostorg_boost)
 add_dependencies(apache_thrift_0_11_0 libevent)
-add_dependencies(third apache_thrift_0_11_0)
+add_dependencies(apache_thrift_0_11_0 bison)
 
 # ExternalProject_Add(
 #     facebook_folly
@@ -263,6 +268,24 @@ add_dependencies(third apache_thrift_0_11_0)
 # add_dependencies(facebook_folly google_double_conversion)
 # add_dependencies(third facebook_folly)
 
+add_dependencies(third google_gtest)
+add_dependencies(third google_protobuf)
+add_dependencies(third boostorg_boost)
+add_dependencies(third peterscott_murmur3)
+add_dependencies(third vipshop_hiredis_vip)
+add_dependencies(third open_source_parses_jsoncpp)
+add_dependencies(third openssl_openssl)
+add_dependencies(third sparsehash_sparsehash)
+add_dependencies(third google_double_conversion)
+add_dependencies(third google_gperftools)
+add_dependencies(third tessil_hopscotch_map)
+add_dependencies(third tessil_robin_map)
+add_dependencies(third gflags_gflags)
+add_dependencies(third libevent)
+add_dependencies(third bison)
+add_dependencies(third apache_thrift_0_9_3)
+add_dependencies(third apache_thrift_0_11_0)
+
 set(CMAKE_CXX_FLAGS "-w -g -std=c++2a -lpthread")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
@@ -270,6 +293,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/include"
     "${HELLO_CPP_SOURCE_DIR}/proto"
     "${HELLO_CPP_SOURCE_DIR}/third/boost/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/libevent/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/murmur3/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/gtest/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/protobuf/build/include"
@@ -287,6 +311,7 @@ include_directories(
 link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/gtest/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/boost/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/libevent/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/protobuf/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/murmur3/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/hiredis-vip/build/lib"
@@ -377,6 +402,7 @@ target_link_libraries(
 # test std
 aux_source_directory(src/std std_source)
 add_executable(test_std ${std_source})
+add_dependencies(test_std third)
 target_link_libraries(
     test_std
     gtest
