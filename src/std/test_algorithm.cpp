@@ -4,7 +4,7 @@
 #include <random>
 #include <vector>
 
-TEST(testNonModifyingSequenceAlgorithm, case1) {
+TEST(testAlgorithm, caseNonModifyingSequence) {
     std::vector<int> vi = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     EXPECT_TRUE(std::all_of(vi.begin(), vi.end(), [](int x) { return x > 0; }));
     EXPECT_TRUE(std::any_of(vi.begin(), vi.end(), [](int x) { return x < 5; }));
@@ -35,7 +35,7 @@ TEST(testNonModifyingSequenceAlgorithm, case1) {
     }
 }
 
-TEST(testModifyingSequenceAlgorithm, case1) {
+TEST(testAlgorithm, caseModifyingSequence) {
     {
         std::vector<int> vi = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         std::vector<int> vo(9, 0);
@@ -117,7 +117,7 @@ TEST(testModifyingSequenceAlgorithm, case1) {
     }
 }
 
-TEST(testSortAlgorithm, case1) {
+TEST(testAlgorithm, caseSort) {
     {
         std::vector<int> vi = {4, 3, 6, 5, 8, 1, 2, 9, 7};
         std::sort(vi.begin(), vi.end(), std::less<int>());
@@ -144,7 +144,7 @@ TEST(testSortAlgorithm, case1) {
     }
 }
 
-TEST(testSetAlgorithm, case1) {
+TEST(testAlgorithm, caseSet) {
     std::set<int> s1 = {1, 2, 3, 4};
     std::set<int> s2 = {3, 4, 5, 6};
 
@@ -167,13 +167,13 @@ TEST(testSetAlgorithm, case1) {
     }
 }
 
-TEST(testMaxMinAlgorithm, case1) {
+TEST(testAlgorithm, caseMaxMin) {
     std::vector<int> vi = {4, 3, 6, 5, 8, 1, 2, 9, 7};
     EXPECT_EQ(*std::max_element(vi.begin(), vi.end()), 9);
     EXPECT_EQ(*std::min_element(vi.begin(), vi.end()), 1);
 }
 
-TEST(testPermutationAlgorithm, case1) {
+TEST(testAlgorithm, casePermutation) {
     std::vector<int> vi = {1, 2, 3, 4};
     std::next_permutation(vi.begin(), vi.end());
     EXPECT_EQ(vi, std::vector<int>({1, 2, 4, 3}));
@@ -181,7 +181,7 @@ TEST(testPermutationAlgorithm, case1) {
     EXPECT_EQ(vi, std::vector<int>({1, 2, 3, 4}));
 }
 
-TEST(testNumericAlgorithm, case1) {
+TEST(testAlgorithm, caseNumeric) {
     {
         std::vector<int> vi = {1, 2, 3, 4, 5, 6, 7, 8, 9};
         EXPECT_EQ(std::accumulate(vi.begin(), vi.end(), 0), 45);
