@@ -27,7 +27,7 @@ TEST(testRegex, caseWildcard) {
 TEST(testRegex, caseCapture) {
     {
         std::string str = "hatlonely@foxmail.com";
-        std::regex pattern("^[a-z0-9]+@[a-z0-9.]+[.][a-z]{2,4}$");
+        std::regex  pattern("^[a-z0-9]+@[a-z0-9.]+[.][a-z]{2,4}$");
         std::smatch result;
         EXPECT_TRUE(std::regex_match(str, result, pattern));
         EXPECT_EQ(result.size(), 1);
@@ -35,7 +35,7 @@ TEST(testRegex, caseCapture) {
     }
     {
         std::string str = "hatlonely@foxmail.com";
-        std::regex pattern("^([a-z0-9]+)@(([a-z0-9.]+)[.]([a-z]{2,4}))$");
+        std::regex  pattern("^([a-z0-9]+)@(([a-z0-9.]+)[.]([a-z]{2,4}))$");
         std::smatch result;
         EXPECT_TRUE(std::regex_match(str, result, pattern));
         EXPECT_EQ(result.size(), 5);
@@ -48,7 +48,7 @@ TEST(testRegex, caseCapture) {
     {
         // ?: 不捕获
         std::string str = "hatlonely@foxmail.com";
-        std::regex pattern("^([a-z0-9]+)@(?:([a-z0-9.]+)[.]([a-z]{2,4}))$");
+        std::regex  pattern("^([a-z0-9]+)@(?:([a-z0-9.]+)[.]([a-z]{2,4}))$");
         std::smatch result;
         EXPECT_TRUE(std::regex_match(str, result, pattern));
         EXPECT_EQ(result.size(), 4);
@@ -60,7 +60,7 @@ TEST(testRegex, caseCapture) {
     {
         // ?= 正向预测
         std::string str = "Windows 2000";
-        std::regex pattern("Windows (?=95|98|NT|2000)");
+        std::regex  pattern("Windows (?=95|98|NT|2000)");
         std::smatch result;
         EXPECT_TRUE(std::regex_search(str, result, pattern));
         EXPECT_EQ(result.size(), 1);
@@ -69,7 +69,7 @@ TEST(testRegex, caseCapture) {
     {
         // ?! 反向预测
         std::string str = "Windows vista";
-        std::regex pattern("Windows (?!95|98|NT|2000)");
+        std::regex  pattern("Windows (?!95|98|NT|2000)");
         std::smatch result;
         EXPECT_TRUE(std::regex_search(str, result, pattern));
         EXPECT_EQ(result.size(), 1);
@@ -85,17 +85,17 @@ TEST(testRegex, caseBackReferences) {
 
 TEST(testRegex, caseReplace) {
     std::regex pattern("^([a-z0-9]+)@(?:([a-z0-9.]+)[.]([a-z]{2,4}))$");
-    EXPECT_EQ( std::regex_replace("hatlonely@foxmail.com", pattern, "$0 $1 $2 $3"), "hatlonely@foxmail.com hatlonely foxmail com");
+    EXPECT_EQ(std::regex_replace("hatlonely@foxmail.com", pattern, "$0 $1 $2 $3"), "hatlonely@foxmail.com hatlonely foxmail com");
 }
 
 TEST(testRegex, caseFindAll) {
-    std::regex pattern("(\\w+)\\1");
-    std::string str = "abab x acac y aeae";
+    std::regex               pattern("(\\w+)\\1");
+    std::string              str = "abab x acac y aeae";
     std::vector<std::string> vi;
     for (auto it = std::sregex_iterator(str.begin(), str.end(), pattern); it != std::sregex_iterator(); ++it) {
         std::smatch result = *it;
         vi.push_back(result[0]);
     }
-    
+
     EXPECT_EQ(vi, std::vector<std::string>({"abab", "acac", "aeae"}));
 }
