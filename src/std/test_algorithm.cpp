@@ -202,4 +202,9 @@ TEST(testNumericAlgorithm, case1) {
         std::partial_sum(vi.begin(), vi.end(), vi.begin());
         EXPECT_EQ(vi, std::vector<int>({1, 3, 6, 10, 15}));
     }
+    {
+        std::vector<int> vi = {1, 2, 3, 4, 5};
+        std::partial_sum(vi.begin(), vi.end(), vi.begin(), std::multiplies<>());
+        EXPECT_EQ(vi, std::vector<int>({1, 2, 6, 24, 120}));
+    }
 }
