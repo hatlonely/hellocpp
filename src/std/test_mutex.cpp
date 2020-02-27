@@ -2,7 +2,9 @@
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <shared_mutex>
 #include <thread>
+#include <unordered_map>
 
 using namespace std::chrono_literals;
 
@@ -94,6 +96,41 @@ TEST(testMutex, caseBlockingQueue) {
             }
         },
                             std::ref(q), i);
+    }
+    for (int i = 0; i < ps.size(); i++) {
+        ps[i].join();
+    }
+    for (int i = 0; i < cs.size(); i++) {
+        cs[i].join();
+    }
+}
+
+TEST(testMutex, caseRWLock) {
+    std::unordered_map<int, int> map;
+
+    std::vector<std::thread> ps(10);
+    std::vector<std::thread> cs(20);
+    std::shared_mutex        mutex;
+
+    auto now = std::chrono::system_clock::now();
+    for (int i = 0; i < ps.size(); i++) {
+        ps[i] = std::thread([&] {
+            while (std::chrono::system_clock::now() - now < 1s) {
+                std::lock_guard<std::shared_mutex> lock(mutex);  // 写锁
+                std::random_device                 rd;
+                map[rd() % 100] = rd() % 100;
+            }
+        });
+    }
+    for (int i = 0; i < cs.size(); i++) {
+        cs[i] = std::thread([&] {
+            while (std::chrono::system_clock::now() - now < 1s) {
+                std::shared_lock<std::shared_mutex> lock(mutex);  // 读锁
+                std::random_device                  rd;
+                auto                                key = rd() % 100;
+                std::cout << key << " => " << map[key] << std::endl;
+            }
+        });
     }
     for (int i = 0; i < ps.size(); i++) {
         ps[i].join();
