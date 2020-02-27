@@ -22,8 +22,7 @@ TEST(testThread, case1) {
         std::this_thread::sleep_for(std::chrono::milliseconds(40));
         result = a + b;
         std::cout << "add: " << a << " + " << b << " = " << result << std::endl;
-    },
-                   a, b, std::ref(result1));
+    }, a, b, std::ref(result1));
 
     std::thread t3(add_function_t(), a, b, std::ref(result2));
 
