@@ -31,10 +31,11 @@ class BlockingQueue {
 
     bool offer(const T& e, std::chrono::milliseconds ms = 0ms) {
         std::unique_lock<std::mutex> lock(_mutex);
-        while (isfull()) {
-            if (ms == 0ms) {
-                _not_full.wait(lock);
-            } else if (_not_full.wait_for(lock, ms) == std::cv_status::timeout) {
+
+        if (ms == 0ms) {
+            _not_full.wait(lock, [this] { return !isfull(); });
+        } else {
+            if (!_not_full.wait_for(lock, ms, [this] { return !isfull(); })) {
                 return false;
             }
         }
@@ -48,10 +49,11 @@ class BlockingQueue {
 
     bool poll(T& e, std::chrono::milliseconds ms = 0ms) {
         std::unique_lock<std::mutex> lock(_mutex);
-        while (isempty()) {
-            if (ms == 0ms) {
-                _not_empty.wait(lock);
-            } else if (_not_empty.wait_for(lock, ms) == std::cv_status::timeout) {
+
+        if (ms == 0ms) {
+            _not_empty.wait(lock, [this] { return !isempty(); });
+        } else {
+            if (!_not_empty.wait_for(lock, ms, [this] { return !isempty(); })) {
                 return false;
             }
         }
