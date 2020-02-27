@@ -408,7 +408,17 @@ target_link_libraries(
     gtest
 )
 
+# test boost
+aux_source_directory(src/boost boost_source)
+add_executable(test_boost ${boost_source})
+add_dependencies(test_boost third)
+target_link_libraries(
+    test_boost
+    gtest
+)
+
 enable_testing()
 add_test(NAME test_unordered_map COMMAND test_unordered_map)
 add_test(NAME test_random COMMAND test_random)
 add_test(NAME test_std COMMAND test_std)
+add_test(NAME test_boost COMMAND test_boost)
