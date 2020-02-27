@@ -33,3 +33,7 @@ TEST(testThread, case1) {
     EXPECT_EQ(result1, 3);
     EXPECT_EQ(result2, 3);
 }
+
+TEST(testThread, caseFunction) {
+    std::cout << std::this_thread::get_id() << std::endl;
+}
