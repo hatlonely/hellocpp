@@ -414,6 +414,7 @@ add_executable(test_boost ${boost_source})
 add_dependencies(test_boost third)
 target_link_libraries(
     test_boost
+    boost_date_time
     gtest
 )
 
