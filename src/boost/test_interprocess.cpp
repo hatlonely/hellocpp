@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/ipc/message_queue.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <iostream>
 #include <map>
@@ -89,4 +90,29 @@ TEST(testInterprocess, caseSharedMemory3) {
     t2.join();
 
     boost::interprocess::shared_memory_object::remove("MySharedMemory3");
+}
+
+TEST(testInterprocess, caseMessageQueue) {
+    auto mq = boost::interprocess::message_queue(boost::interprocess::create_only, "MyMessageQueue", 100, sizeof(int));
+
+    auto t1 = std::thread([&mq] {
+        for (int i = 0; i < 3; i++) {
+            mq.send(&i, sizeof(i), 0);
+        }
+    });
+    t1.join();
+
+    auto t2 = std::thread([&mq] {
+        int                                           num;
+        boost::interprocess::message_queue::size_type size;
+        unsigned int                                  priority;
+        mq.receive(&num, sizeof(num), size, priority);
+        EXPECT_EQ(num, 0);
+        mq.receive(&num, sizeof(num), size, priority);
+        EXPECT_EQ(num, 1);
+        mq.receive(&num, sizeof(num), size, priority);
+    });
+    t2.join();
+
+    boost::interprocess::message_queue::remove("MyMessageQueue");
 }
