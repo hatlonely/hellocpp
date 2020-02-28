@@ -1,25 +1,25 @@
 #include <gtest/gtest.h>
-#include <iostream>
 #include <boost/lockfree/queue.hpp>
 #include <boost/lockfree/stack.hpp>
-#include <vector>
-#include <thread>
-#include <random>
 #include <chrono>
+#include <iostream>
+#include <random>
+#include <thread>
+#include <vector>
 
 using namespace std::chrono_literals;
 
 TEST(testLockfree, caseQueue) {
     auto queue = boost::lockfree::queue<int>(10);
-    
+
     std::vector<std::thread> ps(10);
     std::vector<std::thread> cs(20);
-    
-    auto rd = std::random_device();
+
+    auto rd  = std::random_device();
     auto now = std::chrono::system_clock::now();
-    
+
     for (int i = 0; i < ps.size(); i++) {
-        ps[i] = std::thread([&queue, &rd, &now]{
+        ps[i] = std::thread([&queue, &rd, &now] {
             while (std::chrono::system_clock::now() - now < 500ms) {
                 int i = rd() % 10;
                 if (queue.push(i)) {
@@ -28,9 +28,9 @@ TEST(testLockfree, caseQueue) {
             }
         });
     }
-    
+
     for (int i = 0; i < cs.size(); i++) {
-        cs[i] = std::thread([&queue, &rd, &now]{
+        cs[i] = std::thread([&queue, &rd, &now] {
             while (std::chrono::system_clock::now() - now < 500ms) {
                 int i = 0;
                 if (queue.pop(i)) {
@@ -39,11 +39,11 @@ TEST(testLockfree, caseQueue) {
             }
         });
     }
-    
+
     for (int i = 0; i < ps.size(); i++) {
         ps[i].join();
     }
-    
+
     for (int i = 0; i < cs.size(); i++) {
         cs[i].join();
     }
@@ -51,15 +51,15 @@ TEST(testLockfree, caseQueue) {
 
 TEST(testLockfree, caseStack) {
     auto stack = boost::lockfree::stack<int>(10);
-    
+
     std::vector<std::thread> ps(10);
     std::vector<std::thread> cs(10);
-    
-    auto rd = std::random_device();
+
+    auto rd  = std::random_device();
     auto now = std::chrono::system_clock::now();
-    
+
     for (int i = 0; i < ps.size(); i++) {
-        ps[i] = std::thread([&stack, &rd, &now]{
+        ps[i] = std::thread([&stack, &rd, &now] {
             while (std::chrono::system_clock::now() - now < 500ms) {
                 int i = rd() % 10;
                 if (stack.push(i)) {
@@ -68,9 +68,9 @@ TEST(testLockfree, caseStack) {
             }
         });
     }
-    
+
     for (int i = 0; i < cs.size(); i++) {
-        cs[i] = std::thread([&stack, &rd, &now]{
+        cs[i] = std::thread([&stack, &rd, &now] {
             while (std::chrono::system_clock::now() - now < 500ms) {
                 int i = 0;
                 if (stack.pop(i)) {
@@ -79,11 +79,11 @@ TEST(testLockfree, caseStack) {
             }
         });
     }
-    
+
     for (int i = 0; i < ps.size(); i++) {
         ps[i].join();
     }
-    
+
     for (int i = 0; i < cs.size(); i++) {
         cs[i].join();
     }
