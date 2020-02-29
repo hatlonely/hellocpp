@@ -22,15 +22,34 @@ ExternalProject_Add(
     INSTALL_COMMAND make install
 )
 
+# ExternalProject_Add(
+#     boostorg_boost
+#     URL https://jaist.dl.sourceforge.net/project/boost/boost/1.72.0/boost_1_72_0.7z
+#     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/boost
+#     BUILD_IN_SOURCE true
+#     CONFIGURE_COMMAND ""
+#     BUILD_COMMAND  export PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/bin:$ENV{PATH} &&
+#         export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{LD_LIBRARY_PATH} &&
+#         export DYLD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{DYLD_LIBRARY_PATH} &&
+#         export CPLUS_INCLUDE_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include:$ENV{CPLUS_INCLUDE_PATH} && 
+#         sh bootstrap.sh && echo "using mpi $<SEMICOLON>" >> project-config.jam  && ./b2 link=static  -j8
+#     INSTALL_COMMAND export PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/bin:$ENV{PATH} &&
+#         export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{LD_LIBRARY_PATH} &&
+#         export DYLD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{DYLD_LIBRARY_PATH} &&
+#         export CPLUS_INCLUDE_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include:$ENV{CPLUS_INCLUDE_PATH} &&
+#         ./b2 install --prefix=${HELLO_CPP_SOURCE_DIR}/third/boost/build
+# )
+
 ExternalProject_Add(
     boostorg_boost
-    URL https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.gz
+    URL https://jaist.dl.sourceforge.net/project/boost/boost/1.72.0/boost_1_72_0.7z
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/boost
     BUILD_IN_SOURCE true
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND sh bootstrap.sh && ./b2 link=static -j8
+    BUILD_COMMAND sh bootstrap.sh && echo "using mpi $<SEMICOLON>" >> project-config.jam  && ./b2 link=static  -j8
     INSTALL_COMMAND ./b2 install --prefix=${HELLO_CPP_SOURCE_DIR}/third/boost/build
 )
+add_dependencies(boostorg_boost openmpi)
 
 ExternalProject_Add(
     peterscott_murmur3
@@ -268,6 +287,15 @@ add_dependencies(apache_thrift_0_11_0 bison)
 # add_dependencies(facebook_folly google_double_conversion)
 # add_dependencies(third facebook_folly)
 
+ExternalProject_Add(
+    openmpi
+    URL https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.5.tar.gz
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openmpi
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build --enable-static=yes --enable-shared=no
+    BUILD_COMMAND make -j8
+)
+
 add_dependencies(third google_gtest)
 add_dependencies(third google_protobuf)
 add_dependencies(third boostorg_boost)
@@ -285,6 +313,7 @@ add_dependencies(third libevent)
 add_dependencies(third bison)
 add_dependencies(third apache_thrift_0_9_3)
 add_dependencies(third apache_thrift_0_11_0)
+add_dependencies(third openmpi)
 
 set(CMAKE_CXX_FLAGS "-w -g -std=c++2a -lpthread")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
@@ -306,6 +335,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include"
 )
 
 link_directories(
@@ -321,6 +351,7 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib"
 )
 
 # api
@@ -415,6 +446,7 @@ add_dependencies(test_boost third)
 target_link_libraries(
     test_boost
     boost_date_time
+    boost_system
     gtest
 )
 
