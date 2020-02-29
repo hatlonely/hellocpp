@@ -447,6 +447,7 @@ target_link_libraries(
     test_boost
     boost_date_time
     boost_system
+    boost_program_options
     gtest
 )
 
