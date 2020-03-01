@@ -20,10 +20,10 @@ TEST(testLockfree, caseQueue) {
 
     for (int i = 0; i < ps.size(); i++) {
         ps[i] = std::thread([&queue, &rd, &now] {
-            while (std::chrono::system_clock::now() - now < 500ms) {
+            while (std::chrono::system_clock::now() - now < 50ms) {
                 int i = rd() % 10;
                 if (queue.push(i)) {
-                    std::cout << "produce " << i << std::endl;
+                    // std::cout << "produce " << i << std::endl;
                 }
             }
         });
@@ -31,10 +31,10 @@ TEST(testLockfree, caseQueue) {
 
     for (int i = 0; i < cs.size(); i++) {
         cs[i] = std::thread([&queue, &rd, &now] {
-            while (std::chrono::system_clock::now() - now < 500ms) {
+            while (std::chrono::system_clock::now() - now < 50ms) {
                 int i = 0;
                 if (queue.pop(i)) {
-                    std::cout << "consume " << i << std::endl;
+                    // std::cout << "consume " << i << std::endl;
                 }
             }
         });
@@ -60,10 +60,10 @@ TEST(testLockfree, caseStack) {
 
     for (int i = 0; i < ps.size(); i++) {
         ps[i] = std::thread([&stack, &rd, &now] {
-            while (std::chrono::system_clock::now() - now < 500ms) {
+            while (std::chrono::system_clock::now() - now < 50ms) {
                 int i = rd() % 10;
                 if (stack.push(i)) {
-                    std::cout << "produce " << i << std::endl;
+                    // std::cout << "produce " << i << std::endl;
                 }
             }
         });
@@ -71,10 +71,10 @@ TEST(testLockfree, caseStack) {
 
     for (int i = 0; i < cs.size(); i++) {
         cs[i] = std::thread([&stack, &rd, &now] {
-            while (std::chrono::system_clock::now() - now < 500ms) {
+            while (std::chrono::system_clock::now() - now < 50ms) {
                 int i = 0;
                 if (stack.pop(i)) {
-                    std::cout << "consume " << i << std::endl;
+                    // std::cout << "consume " << i << std::endl;
                 }
             }
         });
