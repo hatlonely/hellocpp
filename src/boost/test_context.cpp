@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <boost/context/fiber.hpp>
+#include <boost/coroutine2/coroutine.hpp>
 #include <iostream>
 
 TEST(testContext, case1) {
@@ -45,4 +46,24 @@ TEST(testContext, case2) {
     std::cout << "f1: return 2nd time" << m << std::endl;
     m += 1;
     std::cout << "f1: returned 3rd time" << std::endl;
+}
+
+TEST(testContext, caseCoroutines) {
+    typedef boost::coroutines2::coroutine<int> coroutine;
+    coroutine::pull_type                       source([&](coroutine::push_type& sink) {
+        int m = 1;
+        int n = 2;
+        sink(m);
+        sink(n);
+        for (int i = 0; i < 8; i++) {
+            int u = m + n;
+            m     = n;
+            n     = u;
+            sink(u);
+        }
+    });
+
+    for (auto i : source) {
+        std::cout << i << std::endl;
+    }
 }
