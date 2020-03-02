@@ -22,24 +22,6 @@ ExternalProject_Add(
     INSTALL_COMMAND make install
 )
 
-# ExternalProject_Add(
-#     boostorg_boost
-#     URL https://jaist.dl.sourceforge.net/project/boost/boost/1.72.0/boost_1_72_0.7z
-#     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/boost
-#     BUILD_IN_SOURCE true
-#     CONFIGURE_COMMAND ""
-#     BUILD_COMMAND  export PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/bin:$ENV{PATH} &&
-#         export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{LD_LIBRARY_PATH} &&
-#         export DYLD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{DYLD_LIBRARY_PATH} &&
-#         export CPLUS_INCLUDE_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include:$ENV{CPLUS_INCLUDE_PATH} && 
-#         sh bootstrap.sh && echo "using mpi $<SEMICOLON>" >> project-config.jam  && ./b2 link=static  -j8
-#     INSTALL_COMMAND export PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/bin:$ENV{PATH} &&
-#         export LD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{LD_LIBRARY_PATH} &&
-#         export DYLD_LIBRARY_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib:$ENV{DYLD_LIBRARY_PATH} &&
-#         export CPLUS_INCLUDE_PATH=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include:$ENV{CPLUS_INCLUDE_PATH} &&
-#         ./b2 install --prefix=${HELLO_CPP_SOURCE_DIR}/third/boost/build
-# )
-
 ExternalProject_Add(
     boostorg_boost
     URL https://jaist.dl.sourceforge.net/project/boost/boost/1.72.0/boost_1_72_0.7z
@@ -296,6 +278,45 @@ ExternalProject_Add(
     BUILD_COMMAND make -j8
 )
 
+ExternalProject_Add(
+    zlib
+    URL https://jaist.dl.sourceforge.net/project/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/zlib
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/zlib/build --static
+)
+
+ExternalProject_Add(
+    brotli
+    URL https://github.com/google/brotli/archive/v1.0.7.zip
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/brotli
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/brotli/build
+    # BUILD_IN_SOURCE true
+    # CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/brotli/build
+)
+
+ExternalProject_Add(
+    openldap
+    URL ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/openldap-2.4.49.tgz
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openldap
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/openldap/build --enable-static=yes --enable-shared=no --enable-slapd=no
+)
+
+ExternalProject_Add(
+    libcurl
+    URL https://curl.haxx.se/download/curl-7.68.0.tar.gz
+    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/libcurl
+    BUILD_IN_SOURCE true
+    CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/libcurl/build --with-ssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build --enable-shared=no
+    BUILD_COMMAND make -j8
+    INSTALL_COMMAND make install
+)
+add_dependencies(libcurl openssl_openssl)
+add_dependencies(libcurl zlib)
+add_dependencies(libcurl openldap)
+add_dependencies(libcurl brotli)
+
 add_dependencies(third google_gtest)
 add_dependencies(third google_protobuf)
 add_dependencies(third boostorg_boost)
@@ -314,6 +335,7 @@ add_dependencies(third bison)
 add_dependencies(third apache_thrift_0_9_3)
 add_dependencies(third apache_thrift_0_11_0)
 add_dependencies(third openmpi)
+add_dependencies(third libcurl)
 
 set(CMAKE_CXX_FLAGS "-w -g -std=c++2a -lpthread")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
@@ -336,6 +358,10 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/libcurl/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/zlib/build/include"
+    "${HELLO_CPP_SOURCE_DIR}/third/brotli/build/include"
 )
 
 link_directories(
@@ -352,6 +378,10 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/libcurl/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/zlib/build/lib"
+    "${HELLO_CPP_SOURCE_DIR}/third/brotli/build/lib"
 )
 
 # api
@@ -452,8 +482,26 @@ target_link_libraries(
     gtest
 )
 
+# test libcurl
+aux_source_directory(src/libcurl libcurl_source)
+add_executable(test_libcurl ${libcurl_source})
+add_dependencies(test_libcurl third)
+target_link_libraries(
+    test_libcurl
+    curl
+    ssl
+    crypto
+    z
+    ldap
+    brotlidec-static
+    brotlienc-static
+    brotlicommon-static
+    gtest
+)
+
 enable_testing()
 add_test(NAME test_unordered_map COMMAND test_unordered_map)
 add_test(NAME test_random COMMAND test_random)
 add_test(NAME test_std COMMAND test_std)
 add_test(NAME test_boost COMMAND test_boost)
+add_test(NAME test_libcurl COMMAND test_libcurl)
