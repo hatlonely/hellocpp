@@ -31,7 +31,7 @@ ExternalProject_Add(
     BUILD_COMMAND sh bootstrap.sh && echo "using mpi $<SEMICOLON>" >> project-config.jam  && ./b2 link=static  -j8
     INSTALL_COMMAND ./b2 install --prefix=${HELLO_CPP_SOURCE_DIR}/third/boost/build
 )
-add_dependencies(boostorg_boost openmpi)
+# add_dependencies(boostorg_boost openmpi)
 
 ExternalProject_Add(
     peterscott_murmur3
@@ -216,7 +216,8 @@ ExternalProject_Add(
     BUILD_IN_SOURCE true
     CONFIGURE_COMMAND
         export PATH=${HELLO_CPP_SOURCE_DIR}/third/bison/build/bin:$ENV{PATH} &&
-        sh bootstrap.sh && ./configure
+        sh bootstrap.sh &&
+        CPPFLAGS=-I${HELLO_CPP_SOURCE_DIR}/third/libevent/build/include LDFLAGS=-L${HELLO_CPP_SOURCE_DIR}/third/libevent/build/lib ./configure
         --prefix=${HELLO_CPP_SOURCE_DIR}/third/thrift_0_11_0/build
         --with-boost=${HELLO_CPP_SOURCE_DIR}/third/boost/build
         --with-openssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
@@ -269,14 +270,14 @@ add_dependencies(apache_thrift_0_11_0 bison)
 # add_dependencies(facebook_folly google_double_conversion)
 # add_dependencies(third facebook_folly)
 
-ExternalProject_Add(
-    openmpi
-    URL https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.5.tar.gz
-    PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openmpi
-    BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build --enable-static=yes --enable-shared=no
-    BUILD_COMMAND make -j8
-)
+# ExternalProject_Add(
+#     openmpi
+#     URL https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.5.tar.gz
+#     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/openmpi
+#     BUILD_IN_SOURCE true
+#     CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/openmpi/build --enable-static=yes --enable-shared=no
+#     BUILD_COMMAND make -j8
+# )
 
 ExternalProject_Add(
     zlib
@@ -291,8 +292,6 @@ ExternalProject_Add(
     URL https://github.com/google/brotli/archive/v1.0.7.zip
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/brotli
     CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=${HELLO_CPP_SOURCE_DIR}/third/brotli/build
-    # BUILD_IN_SOURCE true
-    # CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/brotli/build
 )
 
 ExternalProject_Add(
@@ -308,7 +307,11 @@ ExternalProject_Add(
     URL https://curl.haxx.se/download/curl-7.68.0.tar.gz
     PREFIX ${HELLO_CPP_SOURCE_DIR}/third/libcurl
     BUILD_IN_SOURCE true
-    CONFIGURE_COMMAND ./configure --prefix=${HELLO_CPP_SOURCE_DIR}/third/libcurl/build --with-ssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build --enable-shared=no
+    CONFIGURE_COMMAND ./configure
+        --prefix=${HELLO_CPP_SOURCE_DIR}/third/libcurl/build
+        --with-ssl=${HELLO_CPP_SOURCE_DIR}/third/openssl/build
+        --without-libidn2
+        --enable-shared=no
     BUILD_COMMAND make -j8
     INSTALL_COMMAND make install
 )
@@ -334,7 +337,7 @@ add_dependencies(third libevent)
 add_dependencies(third bison)
 add_dependencies(third apache_thrift_0_9_3)
 add_dependencies(third apache_thrift_0_11_0)
-add_dependencies(third openmpi)
+# add_dependencies(third openmpi)
 add_dependencies(third libcurl)
 
 set(CMAKE_CXX_FLAGS "-w -g -std=c++2a -lpthread")
@@ -357,7 +360,7 @@ include_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/hopscotch_map/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/robin_map/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/include"
-    "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include"
+    # "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/libcurl/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/openssl/build/include"
     "${HELLO_CPP_SOURCE_DIR}/third/zlib/build/include"
@@ -377,7 +380,7 @@ link_directories(
     "${HELLO_CPP_SOURCE_DIR}/third/double_conversion/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gperftools/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/gflags/build/lib"
-    "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib"
+    # "${HELLO_CPP_SOURCE_DIR}/third/openmpi/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/libcurl/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/openssl/build/lib"
     "${HELLO_CPP_SOURCE_DIR}/third/zlib/build/lib"
